@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "tasks": {
+    "openapi": {
+      "outputs": ["docs/openapi/openapi.json", "build/openapi.marker"],
+      "cache": false
+    },
+    "codegen": {
+      "dependsOn": ["backend#openapi"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/apps/backend/docs/openapi/openapi.json"],
+      "outputs": ["src/generated/**"]
+    },
+    "build": {
+      "dependsOn": ["^build", "^codegen", "codegen"],
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^build", "^codegen", "codegen"]
+    },
+    "lint": {
+      "dependsOn": ["^codegen", "codegen"]
+    },
+    "verify": {
+      "dependsOn": ["lint", "typecheck", "^typecheck", "^codegen", "codegen"]
+    },
+    "backend#verify": {
+      "dependsOn": ["backend#openapi"],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^codegen", "codegen"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

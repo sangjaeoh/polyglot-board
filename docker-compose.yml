@@ -1,0 +1,83 @@
+# 한 번에 실행: docker compose up --build
+# postgres(스키마는 Flyway가 생성) → backend(8080) → frontend(3000) 순으로 healthcheck 게이트를 거쳐 기동한다.
+name: board
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: boardapi
+      POSTGRES_PASSWORD: boardapi
+      POSTGRES_DB: boardapi
+    ports:
+      # 로컬 5432 충돌을 피해 호스트 5433에 노출(백엔드는 컨테이너 네트워크의 postgres:5432로 접속).
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U boardapi -d boardapi"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      # 컨텍스트는 Gradle 멀티모듈 루트, Dockerfile은 실행 앱(app-api) 루트에 둔다.
+      context: ./apps/backend
+      dockerfile: module-apps/app-api/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/boardapi
+      SPRING_DATASOURCE_USERNAME: boardapi
+      SPRING_DATASOURCE_PASSWORD: boardapi
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/actuator/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  # 데모 시드: 백엔드 기동(Flyway 완료) 후 보드가 비어 있으면 예시 글을 넣고 종료한다.
+  # 백엔드 코드·테스트를 건드리지 않아 ./gradlew build(Testcontainers)에 영향이 없다.
+  seed:
+    image: postgres:17-alpine
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: boardapi
+    volumes:
+      - ./scripts/seed.sql:/seed/seed.sql:ro
+    entrypoint: ["sh", "-c", "psql -h postgres -U boardapi -d boardapi -v ON_ERROR_STOP=1 -f /seed/seed.sql"]
+    restart: "no"
+
+  frontend:
+    build:
+      # 컨텍스트는 pnpm 워크스페이스 루트, Dockerfile은 실행 앱(web) 루트에 둔다.
+      context: .
+      dockerfile: apps/frontend/apps/web/Dockerfile
+    environment:
+      # server-only api-client가 컨테이너 네트워크로 백엔드를 호출한다.
+      BACKEND_API_URL: http://backend:8080
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    healthcheck:
+      # node:24-slim에는 curl/wget이 없어 node 내장 fetch로 검사한다.
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+volumes:
+  pgdata:

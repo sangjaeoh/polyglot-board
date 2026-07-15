@@ -1,0 +1,33 @@
+# Node / pnpm
+node_modules/
+.pnpm-store/
+*.log
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Turborepo
+.turbo/
+
+# codegen 산출물은 커밋한다(drift 게이트 대상) — 무시하지 않는다.
+
+# Gradle / Java
+.gradle/
+build/
+!**/src/**/build/
+apps/backend/**/build/
+apps/backend/.gradle/
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/

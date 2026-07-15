@@ -1,0 +1,6 @@
+# 무엇을 한 워크스페이스로 묶는지의 정본. 프론트 서브트리와 루트 공유·백엔드를 함께 glob 한다.
+packages:
+  - apps/backend
+  - apps/frontend/apps/*
+  - apps/frontend/packages/*
+  - packages/*

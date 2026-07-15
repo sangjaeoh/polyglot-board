@@ -1,0 +1,5 @@
+spring:
+  jpa:
+    hibernate:
+      # 스키마는 Flyway가 소유하고 기동 시 엔티티↔DDL 일치만 검증한다(앱 불변식과 동일).
+      ddl-auto: validate

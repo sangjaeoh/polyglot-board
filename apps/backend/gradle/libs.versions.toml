@@ -1,0 +1,43 @@
+[versions]
+java = "25"
+springBoot = "4.1.0"
+springDependencyManagement = "1.1.7"
+springdoc = "3.0.3"
+archunit = "1.4.2"
+testcontainers = "1.20.6"
+jspecify = "1.0.0"
+nullaway = "0.13.7"
+errorprone = "2.50.0"
+errorpronePlugin = "4.1.0"
+spotless = "8.8.0"
+palantirJavaFormat = "2.94.0"
+uuidCreator = "6.1.1"
+
+[libraries]
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+springdoc-starter = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+flyway-core = { module = "org.flywaydb:flyway-core" }
+spring-boot-flyway = { module = "org.springframework.boot:spring-boot-flyway" }
+flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
+postgresql = { module = "org.postgresql:postgresql" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+nullaway = { module = "com.uber.nullaway:nullaway", version.ref = "nullaway" }
+errorprone-core = { module = "com.google.errorprone:error_prone_core", version.ref = "errorprone" }
+uuid-creator = { module = "com.github.f4b6a3:uuid-creator", version.ref = "uuidCreator" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+spring-boot-webmvc-test = { module = "org.springframework.boot:spring-boot-webmvc-test" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+palantir-java-format = { module = "com.palantir.javaformat:palantir-java-format", version.ref = "palantirJavaFormat" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePlugin" }

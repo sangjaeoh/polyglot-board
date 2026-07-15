@@ -1,0 +1,23 @@
+{
+  "name": "polyglot-board",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "openapi": "turbo run openapi",
+    "codegen": "turbo run codegen",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "verify": "turbo run verify && pnpm run depcruise:frontend && pnpm run drift:check",
+    "depcruise:frontend": "cd apps/frontend && depcruise apps packages --config .dependency-cruiser.cjs",
+    "drift:check": "turbo run codegen && git diff --exit-code -- packages/shared-types/src/generated apps/backend/docs/openapi",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "dependency-cruiser": "^18.1.0",
+    "turbo": "^2.4.0"
+  }
+}

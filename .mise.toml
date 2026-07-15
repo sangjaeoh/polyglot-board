@@ -1,0 +1,5 @@
+# 툴체인 버전 정본(JDK·Node·pnpm). 루트 package.json packageManager와 함께 소유.
+[tools]
+java = "corretto-25"
+node = "24"
+pnpm = "9"

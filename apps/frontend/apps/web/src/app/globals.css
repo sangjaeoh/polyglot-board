@@ -1,0 +1,195 @@
+@import 'tailwindcss';
+
+/* 워크스페이스 UI 패키지의 클래스도 스캔 대상에 넣는다. */
+@source '../../../../packages/ui/src';
+
+/*
+ * 디자인 토큰. 시맨틱 이름만 노출하고, 원시값은 이 레이어에서만 산다.
+ * 색은 var()로 매핑해 prefers-color-scheme로 라이트/다크를 전환한다(@theme inline).
+ * 폰트 변수(--font-*-plex-*)는 layout의 next/font가 <html>에 주입한다.
+ */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
+
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+
+  --font-sans:
+    var(--font-plex-sans-kr), 'IBM Plex Sans KR', ui-sans-serif, system-ui, 'Apple SD Gothic Neo',
+    'Malgun Gothic', sans-serif;
+  --font-mono:
+    var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  --shadow-card: var(--shadow-card-raw);
+  --shadow-card-hover: var(--shadow-card-hover-raw);
+  --shadow-control: var(--shadow-control-raw);
+}
+
+/* 라이트 팔레트 — 쿨 슬레이트 중립 + 티일 액센트. */
+:root {
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --surface-hover: #eff2f5;
+  --edge: #e3e7ec;
+  --edge-strong: #ccd3dc;
+
+  --ink: #131820;
+  --muted: #55606e;
+  --faint: #8a93a0;
+
+  --accent: #0e7c86;
+  --accent-soft: #e2f1f2;
+
+  --primary: #151b23;
+  --primary-hover: #2a323d;
+  --on-primary: #f6f7f9;
+
+  --danger: #b42318;
+  --danger-hover: #911b12;
+  --danger-fg: #ffffff;
+  --danger-text: #b42318;
+  --danger-soft: #fef3f2;
+
+  --shadow-card-raw: 0 1px 2px 0 rgb(16 21 28 / 0.04), 0 1px 3px 0 rgb(16 21 28 / 0.05);
+  --shadow-card-hover-raw:
+    0 6px 16px -4px rgb(16 21 28 / 0.12), 0 2px 6px -2px rgb(16 21 28 / 0.08);
+  --shadow-control-raw: 0 1px 2px 0 rgb(16 21 28 / 0.05);
+}
+
+/* 다크 팔레트 — 딥 슬레이트(순흑 회피) + 밝은 티일 액센트. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #0c0f13;
+    --surface: #14181e;
+    --surface-hover: #1c222b;
+    --edge: #262d37;
+    --edge-strong: #3a434f;
+
+    --ink: #e8ecf1;
+    --muted: #9aa4b2;
+    --faint: #6b7480;
+
+    --accent: #37c2b9;
+    --accent-soft: #0f2e2f;
+
+    --primary: #e8ecf1;
+    --primary-hover: #cbd3dd;
+    --on-primary: #0c0f13;
+
+    --danger: #c33a28;
+    --danger-hover: #a52e1e;
+    --danger-fg: #ffffff;
+    --danger-text: #f0a093;
+    --danger-soft: #2a1512;
+
+    --shadow-card-raw: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-card-hover-raw: 0 8px 24px -6px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.5);
+    --shadow-control-raw: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  }
+}
+
+/*
+ * 라우트 진행 바. 세그먼트 전환(목록↔상세)은 이전 화면을 유지한 채 준비되면 즉시 교체하고,
+ * 느린 전환에만 상단에 얇은 인디케이터를 보인다(빠른 전환은 바가 뜨기 전에 끝난다).
+ */
+@keyframes route-progress-slide {
+  0% {
+    transform: translateX(-100%) scaleX(0.4);
+  }
+  60% {
+    transform: translateX(60%) scaleX(0.5);
+  }
+  100% {
+    transform: translateX(120%) scaleX(0.4);
+  }
+}
+
+/*
+ * 바는 항상 렌더되되(React 트리 내, 재조정으로 제거되지 않음) 기본은 숨김이고,
+ * 가시성만 React가 모르는 data-active 속성으로 명령형 토글한다. 블로킹 트랜지션 동안
+ * state 기반 렌더가 커밋되지 않는 문제를 피한다.
+ */
+.route-progress-bar {
+  display: none;
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  z-index: 50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.route-progress-bar[data-active] {
+  display: block;
+}
+
+.route-progress-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--color-accent);
+  transform-origin: left center;
+  animation: route-progress-slide 1s ease-in-out infinite;
+}
+
+/* 모션 최소화 선호 시에는 슬라이드 대신 정적 액센트 바로 표시한다. */
+@media (prefers-reduced-motion: reduce) {
+  .route-progress-bar::before {
+    animation-name: none !important;
+    transform: none !important;
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 24%, transparent);
+  }
+}
+
+/* 모션 최소화 선호를 존중한다. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

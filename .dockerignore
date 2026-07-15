@@ -1,0 +1,8 @@
+**/node_modules
+**/.next
+**/.turbo
+**/build
+**/.gradle
+.git
+*.log
+**/.DS_Store
