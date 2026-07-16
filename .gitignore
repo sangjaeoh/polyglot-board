@@ -12,6 +12,9 @@ next-env.d.ts
 # Turborepo
 .turbo/
 
+# Storybook 워크벤치 빌드 산출물(게이트가 생성; 커밋하지 않는다)
+storybook-static/
+
 # codegen 산출물은 커밋한다(drift 게이트 대상) — 무시하지 않는다.
 
 # Gradle / Java

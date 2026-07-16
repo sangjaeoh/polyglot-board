@@ -53,6 +53,10 @@ module.exports = {
           '^packages/config/src/server\\.ts$',
           // 도구 설정 파일은 도구가 관례로 로드한다.
           '(^|/)(next|postcss|eslint)\\.config\\.(js|cjs|mjs|ts)$',
+          // 워크벤치 스토리·설정·게이트 스크립트는 Storybook이 관례로 로드한다.
+          '\\.stories\\.(ts|tsx)$',
+          '(^|/)\\.storybook/',
+          '(^|/)scripts/[^/]+\\.mjs$',
         ],
       },
       to: {},
@@ -60,7 +64,7 @@ module.exports = {
   ],
   options: {
     doNotFollow: { path: 'node_modules' },
-    exclude: { path: ['node_modules', '(^|/)\\.next/'] },
+    exclude: { path: ['node_modules', '(^|/)\\.next/', '(^|/)storybook-static/'] },
     tsConfig: { fileName: path.join(__dirname, 'apps/web/tsconfig.json') },
     tsPreCompilationDeps: true,
     enhancedResolveOptions: {

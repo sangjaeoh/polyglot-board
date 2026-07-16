@@ -24,6 +24,7 @@ export function TextField({ label, error, id, className, ...props }: TextFieldPr
         className={clsx(
           'rounded-lg border bg-surface px-3.5 py-2.5 text-caption text-ink shadow-control',
           'placeholder:text-faint transition-colors duration-fast',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
           error ? 'border-danger focus-visible:border-danger' : 'border-edge focus-visible:border-accent',
           className,
