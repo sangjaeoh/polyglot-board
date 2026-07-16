@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="ko" className={`${sansKr.variable} ${mono.variable}`}>
       <body className="min-h-dvh">
         <RouteProgress />
-        <header className="sticky top-0 z-10 border-b border-edge bg-canvas/85 backdrop-blur-sm supports-[backdrop-filter]:bg-canvas/70">
+        <header className="sticky top-0 z-sticky border-b border-edge bg-canvas/85 backdrop-blur-sm supports-[backdrop-filter]:bg-canvas/70">
           <div className="mx-auto flex max-w-3xl items-center px-6 py-4">
             <Link
               href="/"
@@ -53,9 +53,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             >
               <span
                 aria-hidden
-                className="h-5 w-[3px] rounded-full bg-accent transition-transform duration-200 group-hover:scale-y-125"
+                className="h-5 w-[3px] rounded-full bg-accent transition-transform duration-moderate group-hover:scale-y-125"
               />
-              <span className="text-base font-semibold tracking-tight text-ink">{APP_NAME}</span>
+              <span className="text-heading tracking-tight text-ink">{APP_NAME}</span>
             </Link>
           </div>
         </header>

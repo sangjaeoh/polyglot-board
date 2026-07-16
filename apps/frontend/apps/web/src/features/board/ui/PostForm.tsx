@@ -48,7 +48,7 @@ export function PostForm({ action, submitLabel, initial, showAuthor = false }: P
       {state?.message ? (
         <p
           role="alert"
-          className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-sm text-danger-text"
+          className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-caption text-danger-text"
         >
           {state.message}
         </p>
@@ -57,7 +57,7 @@ export function PostForm({ action, submitLabel, initial, showAuthor = false }: P
         <SubmitButton label={submitLabel} />
         <Link
           href="/"
-          className="text-sm font-medium text-muted transition-colors duration-150 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="text-label text-muted transition-colors duration-fast hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           취소
         </Link>

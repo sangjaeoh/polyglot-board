@@ -21,8 +21,8 @@ export default async function EditPostPage({ params }: { params: Promise<{ id: s
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">게시글 수정</h1>
-        <p className="text-sm text-muted">제목과 내용을 고쳐 저장하세요.</p>
+        <h1 className="text-title-md text-ink">게시글 수정</h1>
+        <p className="text-caption text-muted">제목과 내용을 고쳐 저장하세요.</p>
       </div>
       <PostForm
         action={action}

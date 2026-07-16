@@ -12,8 +12,8 @@ export default function Error({
   return (
     <div className="flex flex-col items-start gap-4 rounded-xl border border-danger-text/25 bg-danger-soft px-5 py-6">
       <div className="flex flex-col gap-1.5">
-        <p className="text-sm font-medium text-danger-text">콘텐츠를 불러오지 못했습니다</p>
-        <p className="text-sm text-muted">잠시 후 다시 시도하거나 페이지를 새로고침하세요.</p>
+        <p className="text-label text-danger-text">콘텐츠를 불러오지 못했습니다</p>
+        <p className="text-caption text-muted">잠시 후 다시 시도하거나 페이지를 새로고침하세요.</p>
       </div>
       <Button variant="secondary" onClick={reset}>
         다시 시도

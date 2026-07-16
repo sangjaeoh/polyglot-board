@@ -44,6 +44,89 @@
   --shadow-control: var(--shadow-control-raw);
 }
 
+/*
+ * 타이포 롤 — 화면에 실재하는 텍스트 위계만 롤로 묶는다(크기·행간·굵기, 해당 시 자간).
+ * 소비처는 text-<롤> 하나로 위계 전체를 받는다 — 크기·굵기를 개별 유틸로 재조립하지 않는다.
+ * 값은 프레임워크 기본 스케일을 그대로 채택했다 — 이 단계는 리디자인이 아니라 현 시각의 토큰화다.
+ * 굵기 미지정 롤(body·caption·body-sm·meta)은 기본 굵기(400)를 상속한다.
+ */
+@theme {
+  /* 제목 계열(세미볼드). 큰 제목은 자간을 좁힌다. */
+  --text-title-lg: 1.875rem; /* 상세 히어로 제목 */
+  --text-title-lg--line-height: 1.25;
+  --text-title-lg--font-weight: 600;
+  --text-title-lg--letter-spacing: -0.025em;
+
+  --text-title-md: 1.5rem; /* 페이지 제목 */
+  --text-title-md--line-height: calc(2 / 1.5);
+  --text-title-md--font-weight: 600;
+  --text-title-md--letter-spacing: -0.025em;
+
+  --text-title-sm: 1.125rem; /* 섹션·안내 제목 */
+  --text-title-sm--line-height: calc(1.75 / 1.125);
+  --text-title-sm--font-weight: 600;
+
+  --text-heading: 1rem; /* 컴포넌트 제목(다이얼로그 등) */
+  --text-heading--line-height: calc(1.5 / 1);
+  --text-heading--font-weight: 600;
+
+  --text-emphasis: 1rem; /* 항목 제목·강조 */
+  --text-emphasis--line-height: calc(1.5 / 1);
+  --text-emphasis--font-weight: 500;
+
+  /* 본문·라벨·캡션 계열. */
+  --text-body: 1rem; /* 장문 읽기 본문 */
+  --text-body--line-height: 2rem;
+
+  --text-label: 0.875rem; /* 버튼·필드 라벨·강조 인라인 */
+  --text-label--line-height: calc(1.25 / 0.875);
+  --text-label--font-weight: 500;
+
+  --text-caption: 0.875rem; /* 보조 설명·에러·입력값·경고 */
+  --text-caption--line-height: calc(1.25 / 0.875);
+
+  --text-body-sm: 0.875rem; /* 여러 줄 편집 필드(입력값보다 넓은 행간) */
+  --text-body-sm--line-height: 1.625;
+
+  --text-meta: 0.75rem; /* 기계 데이터 캡션 — font-mono와 함께 쓴다 */
+  --text-meta--line-height: calc(1 / 0.75);
+}
+
+/*
+ * 모션·레이어 단계.
+ * 이징은 표준 하나다 — 프레임워크 기본 트랜지션 이징을 이 토큰으로 돌려, 전 트랜지션과
+ * 라우트 진행 바(globals.css)가 한 값을 참조한다. duration은 상태 피드백(fast)과 공간
+ * 이동(moderate) 둘이다. z는 스티키 헤더 위로 라우트 진행 바가 오는 현 겹침을 이름 붙였다.
+ */
+@theme {
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --default-transition-timing-function: var(--ease-standard);
+
+  --duration-fast: 150ms;
+  --duration-moderate: 200ms;
+
+  --z-sticky: 10;
+  --z-overlay: 50;
+}
+
+/* v4는 duration·z 네임스페이스로 유틸을 만들지 않으므로 시맨틱 단계를 유틸로 노출한다. */
+@utility duration-fast {
+  --tw-duration: var(--duration-fast);
+  transition-duration: var(--duration-fast);
+}
+@utility duration-moderate {
+  --tw-duration: var(--duration-moderate);
+  transition-duration: var(--duration-moderate);
+}
+@utility z-sticky {
+  z-index: var(--z-sticky);
+}
+
+/*
+ * 스페이싱·브레이크포인트는 프레임워크 기본 스케일을 토큰 스케일로 채택한다.
+ * 역할 이름의 별도 단계 토큰은 그 역할이 반복돼 이름이 필요할 때 정의한다 — 지금은 없다.
+ */
+
 /* 라이트 팔레트 — 쿨 슬레이트 중립 + 티일 액센트. */
 :root {
   --canvas: #f6f7f9;

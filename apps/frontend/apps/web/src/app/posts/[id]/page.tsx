@@ -36,41 +36,37 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   return (
     <article className="flex flex-col gap-8">
       <header className="flex flex-col gap-3 border-l-2 border-accent pl-5">
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-balance text-ink">
-          {post.title}
-        </h1>
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-          <span className="font-medium text-muted">{post.author}</span>
+        <h1 className="text-title-lg text-balance text-ink">{post.title}</h1>
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption">
+          <span className="text-label text-muted">{post.author}</span>
           <span aria-hidden className="text-faint">
             ·
           </span>
-          <PostTime iso={post.createdAt} className="font-mono text-xs text-faint" />
+          <PostTime iso={post.createdAt} className="font-mono text-meta text-faint" />
           {wasEdited ? (
             <>
               <span aria-hidden className="text-faint">
                 ·
               </span>
-              <span className="font-mono text-xs text-faint">
+              <span className="font-mono text-meta text-faint">
                 수정 <PostTime iso={post.updatedAt} />
               </span>
             </>
           ) : null}
         </p>
       </header>
-      <div className="max-w-prose text-base leading-8 whitespace-pre-wrap text-ink">
-        {post.content}
-      </div>
+      <div className="max-w-prose text-body whitespace-pre-wrap text-ink">{post.content}</div>
       <div className="flex items-center gap-3 border-t border-edge pt-6">
         <Link
           href={`/posts/${post.id}/edit`}
-          className="inline-flex items-center gap-2 rounded-lg border border-edge-strong bg-surface px-4 py-2.5 text-sm font-medium text-ink shadow-control transition-colors duration-150 hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="inline-flex items-center gap-2 rounded-lg border border-edge-strong bg-surface px-4 py-2.5 text-label text-ink shadow-control transition-colors duration-fast hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           수정
         </Link>
         <DeletePostButton id={post.id} />
         <Link
           href="/"
-          className="ml-auto text-sm font-medium text-muted transition-colors duration-150 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="ml-auto text-label text-muted transition-colors duration-fast hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           목록
         </Link>
