@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useId, useRef } from 'react';
-import { Button } from '@board/ui';
+import { Alert, Button } from '@board/ui';
 import { deletePostAction } from '../model/actions';
 import { SubmitButton } from './SubmitButton';
 
@@ -28,14 +28,7 @@ export function DeletePostButton({ id }: { id: string }) {
             </h2>
             <p className="text-caption text-muted">삭제한 게시글은 되돌릴 수 없습니다.</p>
           </div>
-          {state?.message ? (
-            <p
-              role="alert"
-              className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-caption text-danger-text"
-            >
-              {state.message}
-            </p>
-          ) : null}
+          {state?.message ? <Alert>{state.message}</Alert> : null}
           <div className="flex justify-end gap-3 pt-1">
             <Button variant="secondary" onClick={() => dialogRef.current?.close()}>
               취소

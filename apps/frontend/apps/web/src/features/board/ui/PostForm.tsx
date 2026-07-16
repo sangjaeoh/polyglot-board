@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import Link from 'next/link';
-import { TextAreaField, TextField } from '@board/ui';
+import { Alert, TextAreaField, TextField } from '@board/ui';
 import type { FormState } from '../model/actions';
 import { SubmitButton } from './SubmitButton';
 
@@ -45,14 +45,7 @@ export function PostForm({ action, submitLabel, initial, showAuthor = false }: P
         required
         error={state?.fieldErrors?.content}
       />
-      {state?.message ? (
-        <p
-          role="alert"
-          className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-caption text-danger-text"
-        >
-          {state.message}
-        </p>
-      ) : null}
+      {state?.message ? <Alert>{state.message}</Alert> : null}
       <div className="flex items-center gap-4 pt-1">
         <SubmitButton label={submitLabel} />
         <Link
