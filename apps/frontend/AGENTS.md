@@ -1,14 +1,15 @@
 # AGENTS.md — 앵커
 
-이 저장소의 개발 규칙은 `docs/`의 다섯 문서가 소유한다. 작업 성격에 맞는 문서를 로딩한다.
+이 저장소의 개발 규칙은 `docs/`의 여섯 문서가 소유한다. 작업 성격에 맞는 문서를 로딩한다.
 
 - [`docs/architecture.md`](docs/architecture.md) — 워크스페이스·패키지 구조·FSD-lite 레이어·의존 방향·서버/클라 구조 경계·시크릿 경계·설정 불변식·빌드 강제 불변식. 앱·패키지·슬라이스를 추가하거나 무엇을 어디에 둘지 정할 때.
 - [`docs/coding-conventions.md`](docs/coding-conventions.md) — 네이밍·타입 선언·컴포넌트/스타일 컨벤션·접근성·표준어. 코드를 쓸 때.
+- [`docs/design-system.md`](docs/design-system.md) — 디자인 토큰 체계·컴포넌트 계층·승격 기준·prop API·완료 정의·워크벤치. 토큰을 만지거나 재사용 컴포넌트를 만들·승격할 때.
 - [`docs/rendering.md`](docs/rendering.md) — 렌더 경계 판단·전략·라우팅·async 상태·메타데이터. 무엇을 서버/클라에서 렌더할지, 라우트를 만들 때.
 - [`docs/data.md`](docs/data.md) — read-model·데이터 흐름·BFF·api-client·캐시·응답 계약·폼. 데이터를 페치·변경하거나 계약을 정할 때.
-- [`docs/code-quality.md`](docs/code-quality.md) — 포맷·린트·타입·경계 게이트와 도구 버전. 품질 게이트·도구 버전을 확인할 때.
+- [`docs/code-quality.md`](docs/code-quality.md) — 포맷·린트·타입·경계·워크벤치 게이트와 도구 버전. 품질 게이트·도구 버전을 확인할 때.
 
-코드 생성 후 → [`docs/architecture.md`](docs/architecture.md)의 "빌드가 강제하는 불변식" 목록으로 자기검증한다. 강제 장치가 아직 배선되지 않은 레포에서는 이 자기검증이 유일한 게이트다.
+코드 생성 후 → [`docs/architecture.md`](docs/architecture.md)의 "빌드가 강제하는 불변식" 목록으로 자기검증한다. 디자인시스템 컴포넌트는 → [`docs/design-system.md`](docs/design-system.md)의 완료 정의로도 자기검증한다. 강제 장치가 아직 배선되지 않은 레포에서는 이 자기검증이 유일한 게이트다.
 
 ## 작업 원칙
 

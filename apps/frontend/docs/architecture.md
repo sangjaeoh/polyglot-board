@@ -23,7 +23,6 @@
   | `packages/auth`       | 세션·토큰 원자재(server-only core + 클라 훅 분리)        | packages(하위)  |
   | `packages/config`     | 공용 설정·상수·env 스키마                                | 제로 도메인     |
 
-- 구현된 워크스페이스는 `apps/web`·`packages/ui`·`packages/api-client`·`packages/config`다. `packages/entities`·`packages/auth`는 미구현(향후)이다 — read-model은 현재 앱 로컬 `entities/`에 있다(아래 read-model·api-client 배치).
 - 단방향 의존: `apps/*`가 `packages/*`를 의존한다. 역방향(packages→apps)·앱 간 의존(appA→appB)·패키지 순환은 금지한다.
 - 공유는 사용처로 가른다: 둘 이상의 앱이 쓰면 `packages/*`로 승격하고, 한 앱 전용이면 그 앱 안 `src/`에 둔다. 애매하면 앱 로컬로 두고 두 번째 앱이 필요로 할 때 승격한다.
 - 공유 패키지는 역할별로 나눈다(`ui`·`config`·`api-client`·`auth`).
@@ -75,7 +74,6 @@
 ### read-model·api-client 배치
 
 - 공유 도메인 모델은 `packages/entities`에, 앱 전용은 앱 내 `entities/`에 둔다(승격 기준은 위 2계층 모듈 지도). 이 모델이 담는 것·스키마·검증은 → [data](data.md)의 read-model.
-  - 현재는 공유 소비처가 없어 read-model이 `apps/web`의 `entities/`에만 있고 `packages/entities`는 미구현이다. 둘째 소비 앱이 생길 때 승격한다.
   - 공유 계층에 둬도 도메인 로직·비즈니스 규칙을 originate하지 않는다(read-model의 성격은 → [data](data.md)의 read-model·BFF 경계).
 - `packages/api-client`는 백엔드 타입드 클라이언트를 담고 `server-only`다. 호출·검증·auth 전파 규칙은 → [data](data.md)의 api-client.
 - `shared`·`packages/*`에는 기술 지원만 둔다. 도메인 로직·도메인 지식을 넣지 않는다(방향은 빌드가 강제).
@@ -112,6 +110,6 @@
   - 워크스페이스 방향(packages→apps 금지·앱 간 import 금지·패키지 순환·고아 모듈) — dependency-cruiser.
   - FSD 레이어 방향(feature→feature 금지·shared→상위 금지·public API 우회 깊은 import 금지) — eslint-plugin-boundaries.
   - 드롭한 레이어 거부(`widgets`·FSD `pages`가 element type에 없어 사용이 위반) — eslint-plugin-boundaries.
-  - 서버/클라 누수(클라 모듈이 `api-client` 등 server-only 모듈을 import) — `server-only`/`client-only` 포이즌 임포트(빌드 에러). `auth` 도입 시 클라 훅 엔트리 사용은 정상이다(server-only core만 가드).
+  - 서버/클라 누수(클라 모듈이 `api-client` 등 server-only 모듈을 import) — `server-only`/`client-only` 포이즌 임포트(빌드 에러). `auth`는 클라 훅 엔트리 사용이 정상이다(server-only core만 가드).
 - 경계 도구 역할을 고정한다: dependency-cruiser=워크스페이스 방향, eslint-plugin-boundaries=FSD 레이어. 둘이 같은 관심사를 이중 집행하지 않는다.
   - steiger를 두지 않는다 — FSD 고정 taxonomy만 이해해 모노레포 `packages/` 승격을 오모델한다.
