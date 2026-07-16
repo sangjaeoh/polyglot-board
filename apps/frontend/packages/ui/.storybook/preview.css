@@ -1,0 +1,33 @@
+/*
+ * 워크벤치 프리뷰 스타일시트. 앱 globals.css와 같은 방식으로 Tailwind와 토큰을 배선한다.
+ * Tailwind 처리는 @tailwindcss/vite가 담당하고(.storybook/main.ts), 이 파일이 진입점이다.
+ */
+@import 'tailwindcss';
+
+/* 토큰 정의는 디자인시스템 패키지가 소유한다(design-system.md 토큰). 프리뷰가 직접 import한다. */
+@import '../src/tokens.css';
+
+/* 컴포넌트·스토리의 유틸 클래스를 스캔 대상에 넣는다(앱 globals.css의 @source와 같은 역할). */
+@source '../src';
+
+/*
+ * 워크벤치 캔버스를 앱과 동일한 토큰으로 칠한다(앱 globals.css body와 정합).
+ * 폰트 변수(--font-plex-*)는 앱 next/font가 <html>에 주입하므로 프리뷰엔 없다 —
+ * 토큰의 폴백 스택(IBM Plex / system-ui)으로 렌더된다(의도된 차이, code-quality.md 전제).
+ */
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 앱과 동일하게 모션 최소화 선호를 존중한다(design-system.md 완료 정의). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

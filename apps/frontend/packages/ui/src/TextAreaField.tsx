@@ -23,6 +23,7 @@ export function TextAreaField({ label, error, id, className, ...props }: TextAre
         className={clsx(
           'min-h-44 resize-y rounded-lg border bg-surface px-3.5 py-2.5 text-body-sm text-ink shadow-control',
           'placeholder:text-faint transition-colors duration-fast',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
           error ? 'border-danger focus-visible:border-danger' : 'border-edge focus-visible:border-accent',
           className,

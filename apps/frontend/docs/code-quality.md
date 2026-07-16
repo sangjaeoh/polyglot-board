@@ -38,6 +38,11 @@
   - Ladle 등 경량 대안을 기각한 이유: 접근성 애드온·test-runner 생태계가 없거나 빈약해 스토리 대상 자동 검사 규칙을 이행할 수 없다. load-bearing한 것은 렌더러가 아니라 검사 체인이다.
 - Storybook 설정은 디자인시스템 패키지가 소유한다. 앱에 두지 않는다.
   - 특정 앱에 살면 둘째 앱부터 소유가 모호해지고 디자인시스템 검증이 앱 설정에 묶인다. 워크벤치가 렌더하는 토큰·스타일은 디자인시스템 패키지 소유가 전제다(→ [design-system](design-system.md)의 토큰).
+- 빌더는 react-vite다.
+  - next 빌더를 기각한 이유: 디자인시스템 패키지는 Next 밖 순수 React라 next 빌더가 워크벤치를 앱에 결합시킨다. 워크벤치는 앱 없이 렌더해야 한다.
+- Tailwind는 워크벤치 자체 Vite 빌드가 처리한다(앱 postcss와 분리). 프리뷰는 디자인시스템 패키지의 토큰 스타일시트를 직접 import해 앱 없이 렌더한다.
+- hover·focus-visible·active 상태는 pseudo-states 애드온으로 상태 매트릭스에 렌더한다.
+  - 정적 스토리는 의사 클래스 상태를 캡처하지 못한다. 애드온이 상태를 강제해 매트릭스가 계약으로 고정된다.
 - 게이트: 전 스토리 렌더 스모크(test-runner)와 접근성 검사(addon-a11y·axe)를 루트 `verify` 파이프라인에 포함한다.
   - 스토리가 있어도 verify 밖이면 깨진 채 방치된다. 게이트 합류가 강제의 실체다.
 - 시각 회귀 검사 도구는 도입 시점에 이 문서가 고정한다. 선제 도입하지 않는다(검사 대상 규칙은 → [design-system](design-system.md)의 워크벤치).
@@ -63,4 +68,4 @@
   | 린트                | ESLint (`@next/eslint-plugin-next`·`react-hooks` v6·`jsx-a11y`·`boundaries`) |
   | 포맷                | Prettier (+ `eslint-config-prettier`)                                    |
   | 경계                | dependency-cruiser                                                       |
-  | 워크벤치            | Storybook (CSF3 · test-runner · addon-a11y)                              |
+  | 워크벤치            | Storybook (react-vite · CSF3 · test-runner · addon-a11y · addon-pseudo-states) |

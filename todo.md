@@ -33,4 +33,4 @@
 
 ## 워크벤치
 
-- [ ] **5. Storybook 배선** — 스토리 0개. `packages/ui`가 설정을 소유하는 Storybook(CSF3)을 배선하고, 프리미티브·승격분의 variant × 상태 × 테마 스토리를 co-locate로 작성, test-runner 스모크 + addon-a11y를 루트 verify 파이프라인에 합류시킨다. 1번이 구조적 전제다(토큰이 앱에 있으면 프리뷰가 스타일 없이 렌더).
+- [x] **5. Storybook 배선** — 스토리 0개. `packages/ui`가 설정을 소유하는 Storybook(CSF3)을 배선하고, 프리미티브·승격분의 variant × 상태 × 테마 스토리를 co-locate로 작성, test-runner 스모크 + addon-a11y를 루트 verify 파이프라인에 합류시킨다. 1번이 구조적 전제다(토큰이 앱에 있으면 프리뷰가 스타일 없이 렌더).
