@@ -6,7 +6,7 @@ export function PostList({ page }: { page: PostPageResponse }) {
   if (page.content.length === 0) {
     return (
       <div className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-edge-strong bg-surface px-6 py-16 text-center shadow-card">
-        <span aria-hidden className="h-8 w-[3px] rounded-full bg-accent" />
+        <span aria-hidden className="h-8 w-rail rounded-full bg-accent" />
         <div className="flex flex-col gap-1.5">
           <p className="text-emphasis text-ink">아직 글이 없습니다</p>
           <p className="text-caption text-muted">첫 글을 남겨 이 게시판을 시작하세요.</p>

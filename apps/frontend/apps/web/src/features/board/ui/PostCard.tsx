@@ -11,7 +11,7 @@ export function PostCard({ post }: { post: PostSummary }) {
       >
         <span
           aria-hidden
-          className="absolute inset-y-3 left-0 w-[3px] origin-center scale-y-0 rounded-full bg-accent opacity-0 transition-[transform,opacity] duration-moderate group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
+          className="absolute inset-y-3 left-0 w-rail origin-center scale-y-0 rounded-full bg-accent opacity-0 transition-[transform,opacity] duration-moderate group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
         />
         <div className="min-w-0 flex-1">
           <h2 className="line-clamp-2 text-emphasis text-ink transition-colors duration-fast group-hover:text-accent">
