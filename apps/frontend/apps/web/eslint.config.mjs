@@ -5,6 +5,7 @@ import boundaries from 'eslint-plugin-boundaries';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactHooks from 'eslint-plugin-react-hooks';
 import tseslint from 'typescript-eslint';
+import noRawTailwindValues from '../../eslint-rules/no-raw-tailwind-values.mjs';
 
 // eslint-plugin-boundaries가 FSD 레이어 방향을 강제한다(feature→feature 금지·shared→상위 금지).
 // 워크스페이스 방향(packages→apps 등)은 dependency-cruiser가 소유한다.
@@ -59,5 +60,7 @@ export default tseslint.config(
       ],
     },
   },
+  // 토큰 우회 차단(원시 색·치수 값). 프론트 서브트리 공유 규칙을 ui config와 함께 소비한다.
+  noRawTailwindValues,
   prettierConfig,
 );

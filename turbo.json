@@ -21,7 +21,7 @@
       "dependsOn": ["^codegen", "codegen"]
     },
     "verify": {
-      "dependsOn": ["lint", "typecheck", "^typecheck", "^codegen", "codegen"]
+      "dependsOn": ["lint", "^lint", "typecheck", "^typecheck", "^codegen", "codegen"]
     },
     "backend#verify": {
       "dependsOn": ["backend#openapi"],

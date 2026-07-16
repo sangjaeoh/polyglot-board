@@ -8,7 +8,7 @@
 
 ## 규칙
 
-- 강제 기계 배치: ESLint flat config는 앱 인라인(`apps/web/eslint.config.mjs`), TS 베이스는 프론트 루트 `tsconfig.base.json`(전 워크스페이스가 상속), dependency-cruiser는 프론트 루트 `.dependency-cruiser.cjs`, 태스크 그래프는 모노레포 루트 `turbo.json`이다.
+- 강제 기계 배치: ESLint flat config는 린트 대상 워크스페이스마다 인라인이다(앱 `apps/web/eslint.config.mjs`, 디자인시스템 패키지 `packages/ui/eslint.config.mjs`). 워크스페이스가 공유하는 규칙(원시 색·치수 값 차단 등)은 프론트 루트 `eslint-rules/`가 소유하고 각 인라인 config가 소비한다. TS 베이스는 프론트 루트 `tsconfig.base.json`(전 워크스페이스가 상속), dependency-cruiser는 프론트 루트 `.dependency-cruiser.cjs`, 태스크 그래프는 모노레포 루트 `turbo.json`이다.
   - 강제 로직을 앱마다 복제하면 드리프트한다 — 둘째 앱을 추가할 때 공유 `packages/eslint-config`·`packages/tsconfig` 패키지로 승격한다. 검증은 루트 `verify` 파이프라인 한 명령으로 실행한다(`turbo`가 워크스페이스 그래프에 팬아웃·캐싱).
 - 경계 강제(워크스페이스 방향·FSD 방향·서버/클라 누수)의 불변식 목록은 → [architecture](architecture.md)의 빌드가 강제하는 불변식이 소유한다. 이 문서는 그 도구의 설정만 다루고 불변식을 재서술하지 않는다.
 

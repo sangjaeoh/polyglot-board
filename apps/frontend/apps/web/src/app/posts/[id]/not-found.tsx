@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function PostNotFound() {
   return (
     <div className="flex flex-col items-start gap-5 py-8">
-      <span aria-hidden className="h-8 w-[3px] rounded-full bg-accent" />
+      <span aria-hidden className="h-8 w-rail rounded-full bg-accent" />
       <div className="flex flex-col gap-1.5">
         <p className="text-title-sm text-ink">게시글을 찾을 수 없습니다</p>
         <p className="text-caption text-muted">

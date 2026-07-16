@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             >
               <span
                 aria-hidden
-                className="h-5 w-[3px] rounded-full bg-accent transition-transform duration-moderate group-hover:scale-y-125"
+                className="h-5 w-rail rounded-full bg-accent transition-transform duration-moderate group-hover:scale-y-125"
               />
               <span className="text-heading tracking-tight text-ink">{APP_NAME}</span>
             </Link>

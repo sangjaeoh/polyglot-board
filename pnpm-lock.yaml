@@ -140,12 +140,18 @@ importers:
       '@types/react':
         specifier: ^19.2.0
         version: 19.2.17
+      eslint:
+        specifier: ^9.18.0
+        version: 9.39.5(jiti@2.7.0)
       react:
         specifier: ^19.2.7
         version: 19.2.7
       typescript:
         specifier: ^5.7.2
         version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.20.0
+        version: 8.64.0(eslint@9.39.5(jiti@2.7.0))(typescript@5.9.3)
 
   packages/shared-types:
     dependencies:
