@@ -2,14 +2,14 @@
 
 ## 언제
 
-- 포맷·타입·린트·경계 게이트가 무엇을 강제하는지 확인할 때.
+- 포맷·타입·린트·경계·워크벤치 게이트가 무엇을 강제하는지 확인할 때.
 - 게이트 도구 버전을 정하거나 올릴 때. 런타임 프레임워크·라이브러리 버전은 → [README](../README.md)의 기술 스택.
 - 새 앱·패키지에 품질 게이트를 배선할 때.
 
 ## 규칙
 
-- 강제 기계 배치: ESLint flat config는 앱 인라인(`apps/web/eslint.config.mjs`), TS 베이스는 프론트 루트 `tsconfig.base.json`(전 워크스페이스가 상속), dependency-cruiser는 프론트 루트 `.dependency-cruiser.cjs`, 태스크 그래프는 모노레포 루트 `turbo.json`이다. 공유 `packages/eslint-config`·`packages/tsconfig` 패키지는 미구현(향후)이다.
-  - 강제 로직을 앱마다 복제하면 드리프트한다 — 둘째 앱을 추가할 때 공유 패키지로 승격한다. 검증은 루트 `verify` 파이프라인 한 명령으로 실행한다(`turbo`가 워크스페이스 그래프에 팬아웃·캐싱).
+- 강제 기계 배치: ESLint flat config는 앱 인라인(`apps/web/eslint.config.mjs`), TS 베이스는 프론트 루트 `tsconfig.base.json`(전 워크스페이스가 상속), dependency-cruiser는 프론트 루트 `.dependency-cruiser.cjs`, 태스크 그래프는 모노레포 루트 `turbo.json`이다.
+  - 강제 로직을 앱마다 복제하면 드리프트한다 — 둘째 앱을 추가할 때 공유 `packages/eslint-config`·`packages/tsconfig` 패키지로 승격한다. 검증은 루트 `verify` 파이프라인 한 명령으로 실행한다(`turbo`가 워크스페이스 그래프에 팬아웃·캐싱).
 - 경계 강제(워크스페이스 방향·FSD 방향·서버/클라 누수)의 불변식 목록은 → [architecture](architecture.md)의 빌드가 강제하는 불변식이 소유한다. 이 문서는 그 도구의 설정만 다루고 불변식을 재서술하지 않는다.
 
 ### Prettier
@@ -32,6 +32,16 @@
 
 - dependency-cruiser가 워크스페이스 의존 그래프를 검사한다. 무엇을 막는지(방향·순환·고아·드롭 레이어)는 → [architecture](architecture.md)의 빌드가 강제하는 불변식. 이 문서는 설정 위치·상속만 소유한다.
 
+### Storybook
+
+- 디자인시스템 워크벤치는 Storybook(CSF3)이다. 스토리는 대상 컴포넌트 옆에 둔다(파일 명명은 → [coding-conventions](coding-conventions.md)의 네이밍). 워크벤치가 지키는 규칙(계약·커버리지·강제 범위)은 → [design-system](design-system.md)의 워크벤치.
+  - Ladle 등 경량 대안을 기각한 이유: 접근성 애드온·test-runner 생태계가 없거나 빈약해 스토리 대상 자동 검사 규칙을 이행할 수 없다. load-bearing한 것은 렌더러가 아니라 검사 체인이다.
+- Storybook 설정은 디자인시스템 패키지가 소유한다. 앱에 두지 않는다.
+  - 특정 앱에 살면 둘째 앱부터 소유가 모호해지고 디자인시스템 검증이 앱 설정에 묶인다. 워크벤치가 렌더하는 토큰·스타일은 디자인시스템 패키지 소유가 전제다(→ [design-system](design-system.md)의 토큰).
+- 게이트: 전 스토리 렌더 스모크(test-runner)와 접근성 검사(addon-a11y·axe)를 루트 `verify` 파이프라인에 포함한다.
+  - 스토리가 있어도 verify 밖이면 깨진 채 방치된다. 게이트 합류가 강제의 실체다.
+- 시각 회귀 검사 도구는 도입 시점에 이 문서가 고정한다. 선제 도입하지 않는다(검사 대상 규칙은 → [design-system](design-system.md)의 워크벤치).
+
 ### 억제
 
 - 게이트(타입·린트·경계) 위반은 억제가 아니라 설계 변경으로 없앤다. `eslint-disable`·`@ts-ignore`·`@ts-expect-error`로 게이트를 침묵시키지 않는다.
@@ -53,3 +63,4 @@
   | 린트                | ESLint (`@next/eslint-plugin-next`·`react-hooks` v6·`jsx-a11y`·`boundaries`) |
   | 포맷                | Prettier (+ `eslint-config-prettier`)                                    |
   | 경계                | dependency-cruiser                                                       |
+  | 워크벤치            | Storybook (CSF3 · test-runner · addon-a11y)                              |

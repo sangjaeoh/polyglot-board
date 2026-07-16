@@ -18,7 +18,7 @@
 - 의존은 한 방향으로만 흐른다: TS 앱 → 루트/프론트 `packages`. 역방향·앱 간 의존은 금지다(→ 경계 강제).
 
 ```
-polyglot-board/
+{repo}/
 ├── AGENTS.md              루트 앵커(트리아지·2문서 인덱스·자기검증)
 ├── CLAUDE.md
 ├── docs/

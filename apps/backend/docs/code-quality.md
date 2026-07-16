@@ -22,8 +22,9 @@
 
 ### NullAway + JSpecify
 
-- NullAway는 `convention.java-base`의 `NullAway:AnnotatedPackages=com.board` 배선으로 전 `com.board` 프로덕션 소스에서 미주석 참조를 non-null로 보고, null 계약 위반을 빌드에서 잡는다. nullable 값은 `@Nullable`로 표기하면 게이트가 그 참조의 null 처리를 요구한다.
+- NullAway는 `convention.java-base`의 `NullAway:AnnotatedPackages={베이스패키지}` 배선으로 전 베이스 패키지 프로덕션 소스에서 미주석 참조를 non-null로 보고, null 계약 위반을 빌드에서 잡는다. nullable 값은 `@Nullable`로 표기하면 게이트가 그 참조의 null 처리를 요구한다.
   - 검사 범위는 패키지 접두 배선이 정한다 — 모듈이 `@NullMarked`를 누락해도 무검사가 되지 않는다. 각 모듈 베이스 패키지의 `@NullMarked`(배치 → [architecture](architecture.md))는 IDE·타 도구용 JSpecify 시맨틱 선언으로 유지한다.
+  - 전량 조건: 검사 범위가 접두 목록이므로 베이스 패키지 밖 모듈은 조용히 무검사가 된다 — `@NullMarked`가 있어도 빌드는 검사하지 않는다. 접두가 복수면 콤마 목록으로 등록한다.
 - JPA가 채우는 엔티티 필드는 초기화 검사에서 제외한다. `convention.java-base`의 `NullAway:ExcludedFieldAnnotations`에 JPA 매핑 애노테이션(`jakarta.persistence`의 `Id`·`Column`·`Enumerated`·`Convert`·`Embedded`·`ManyToOne`·`OneToOne`·`OneToMany`·`JoinColumn`·`Version` 등)을 등록한다.
   - NullAway는 검사 범위에서 `protected` 무인자 생성자가 초기화하지 않는 non-null 필드를 전부 위반으로 본다. 매핑 애노테이션이 붙은 필드는 이 배선이 일괄 제외하므로 클래스 단위 `@SuppressWarnings("NullAway.Init")`가 필요 없다.
   - 애노테이션 기반 제외는 무애노테이션 필드를 못 덮는다. 모든 영속 non-null 필드에 매핑 애노테이션을 명시하고 nullable 값만 `@Nullable`로 남기는 규칙이 이를 보장한다 → [entity-persistence](entity-persistence.md).

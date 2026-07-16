@@ -13,7 +13,7 @@
 ### 네이밍
 
 - 컴포넌트 파일·export는 PascalCase, 훅은 `use`-접두 camelCase, 그 외 모듈은 camelCase.
-- 파일명은 역할을 드러낸다: 컴포넌트 `Button.tsx`, 훅 `useCart.ts`, Server Action 파일 `actions.ts`, route handler `route.ts`, 스키마 `schema.ts`, 슬라이스 public API `index.client.ts`/`index.server.ts`.
+- 파일명은 역할을 드러낸다: 컴포넌트 `Button.tsx`, 스토리 `Button.stories.tsx`, 훅 `useCart.ts`, Server Action 파일 `actions.ts`, route handler `route.ts`, 스키마 `schema.ts`, 슬라이스 public API `index.client.ts`/`index.server.ts`.
 - 라우트 파일(`page`·`layout`·`loading`·`error` 등)은 `export default`로 내보낸다 — 네임드 export는 라우터가 인식하지 못한다. feature 컴포넌트는 네임드 export를 쓴다.
 - 벤더 중립으로 짓는다. 백엔드·인프라 벤더명을 타입·심볼에 넣지 않는다(api-client 포트의 벤더 중립 명명은 → [data](data.md)의 api-client).
 - 한 개념에는 하나의 표준어만 쓴다. 동의어를 만들지 않는다.
@@ -34,7 +34,7 @@
 ### 컴포넌트
 
 - 컴포넌트의 세그먼트 배치는 → [architecture](architecture.md)의 세그먼트와 서버/클라 구조 경계.
-- 재사용 디자인시스템 컴포넌트는 `packages/ui`로, feature 전용은 슬라이스 `ui`로 둔다. 도메인 로직을 `packages/ui`에 넣지 않는다.
+- 재사용 디자인시스템 컴포넌트는 `packages/ui`로, feature 전용은 슬라이스 `ui`로 둔다. 도메인 로직을 `packages/ui`에 넣지 않는다. 계층 구분·승격 기준·prop API·완료 정의는 → [design-system](design-system.md)의 컴포넌트 계층·컴포넌트 API·완료 정의.
 - 컴포넌트의 서버/클라 기본값과 `'use client'` leaf 판단은 → [rendering](rendering.md)의 렌더 경계.
 - 접근성을 완료조건으로 만든다.
   - 시맨틱 HTML을 먼저 쓴다(`button`·`nav`·`main`·`ul`). `div` 클릭 핸들러로 버튼을 흉내내지 않는다.
@@ -46,6 +46,7 @@
 
 - Tailwind CSS v4 유틸리티 + 디자인 토큰을 쓴다. 원시 hex·px 대신 토큰을 쓴다(원시값 강제는 → [code-quality](code-quality.md)의 ESLint).
   - CSS-in-JS(styled-components·vanilla-extract)를 기각한 이유: 런타임 비용 또는 파편화된 클래스 관리. 유틸리티 + 토큰이 일관성과 제거 용이성을 준다.
+- 토큰의 체계·명명·테마 분기·소유는 → [design-system](design-system.md)의 토큰.
 - 조건부 클래스는 명시적 유틸(`clsx`/`cn` 등)로 합성한다.
 
 ### 주석

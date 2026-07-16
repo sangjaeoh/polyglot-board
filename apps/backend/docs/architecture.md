@@ -23,7 +23,7 @@
   | `convention.external-module` | `external-{name}` | 구현 대상 domain + common만 의존                             |
   | `convention.common-module`   | `common-{role}` | core 방향 단방향(web→auth만 허용), core는 의존 제로            |
 
-- `convention.infra-module`·`convention.external-module`은 미구현(향후)이다 — 해당 계층 모듈을 처음 만들 때 함께 구현한다.
+- 계층 컨벤션 플러그인은 그 계층의 첫 모듈을 만들 때 함께 구현한다. 모듈 없는 계층의 플러그인을 선제 구현하지 않는다.
 - 계층 컨벤션 플러그인은 `convention.java-base`(Spotless·NullAway·Error Prone)와 `convention.java-common`(금지 의존성 차단)을 apply한다. 따라서 모듈은 계층 플러그인 하나만 적용해도 품질 게이트가 딸려온다(도구 상세는 → [code-quality](code-quality.md)).
 - 모듈 간 의존은 `implementation`이 기본이다. `api`는 그 타입이 자기 모듈 공개 시그니처에 등장해 소비자 재노출이 의도된 때만 쓴다.
 - 새 모듈은 `module-{layer}/{prefix}-{name}` 디렉터리에 `build.gradle.kts` 하나(해당 유형 컨벤션 플러그인만 적용)로 만들고 settings에 등록한다.
@@ -62,7 +62,7 @@
   | `app-batch`     | 배치·정리 잡          | 격리 구역 `infrastructure/reader`에서 엔티티 접근    |
   | `app-migration` | Flyway 독립 실행기    | 런타임 데이터 접근 없음                              |
 
-- 구현된 앱은 `app-api` 하나다. `app-admin`·`app-batch`·`app-migration`은 미구현(향후)이며, `app-migration` 분리 전까지는 실행 앱이 부팅 시 Flyway를 실행한다(수행 기계는 아래 도메인 모듈 구조의 마이그레이션 불릿).
+- `app-migration`이 분리되기 전에는 실행 앱이 부팅 시 Flyway를 실행한다(수행 기계는 아래 도메인 모듈 구조의 마이그레이션 불릿).
 - 실행 앱은 아래 설정 불변식을 둔다. 다수 규칙의 전제다.
   - `spring.jpa.open-in-view: false` — 경계 밖 지연로딩을 런타임에 차단한다(경계 원칙의 전제).
   - `spring.jpa.hibernate.ddl-auto: validate` — 스키마는 Flyway가 소유하고 기동 시 엔티티↔DDL 일치만 검증한다(마이그레이션·인덱스·`@Version` 규칙의 전제).
@@ -102,7 +102,7 @@
   | `common-auth`      | 토큰(JWT) 검증 원자재(웹 필터는 common-web 소유)                               |
   | `common-web`       | 웹 공통 — 인증·멱등 필터·`AuthUser`·ProblemDetail 핸들러·공용 validator 승격처 |
 
-- 구현된 common 모듈은 `common-core`·`common-jpa`·`common-web`이다. `common-messaging`·`common-auth`는 미구현(향후)이다.
+- common 모듈은 첫 수요가 생길 때 만든다. 소비자 없는 모듈을 선제 생성하지 않는다.
 - 배치가 애매하면 더 좁은 의존의 모듈을 택한다(core에 갈 수 있으면 core로).
   - 역할별 분할의 목적이 의존 가능 범위 축소라서다. 단일 util 모듈은 도메인이 web 타입에 의존하는 오염을 막지 못해 기각한다.
 
