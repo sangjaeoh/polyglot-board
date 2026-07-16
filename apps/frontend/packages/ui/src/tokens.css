@@ -1,0 +1,108 @@
+/*
+ * 디자인 토큰. 시맨틱 이름만 노출하고, 원시값은 이 레이어에서만 산다.
+ * 색은 var()로 매핑해 prefers-color-scheme로 라이트/다크를 전환한다(@theme inline).
+ * 폰트 변수(--font-*-plex-*)는 각 앱 layout의 next/font가 <html>에 주입한다.
+ * 이 파일은 단독 빌드가 없다 — 소비 앱의 Tailwind 빌드가 @import로 인라인해 @theme을 처리한다.
+ */
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-edge: var(--edge);
+  --color-edge-strong: var(--edge-strong);
+
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-fg: var(--danger-fg);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+
+  --font-sans:
+    var(--font-plex-sans-kr), 'IBM Plex Sans KR', ui-sans-serif, system-ui, 'Apple SD Gothic Neo',
+    'Malgun Gothic', sans-serif;
+  --font-mono:
+    var(--font-plex-mono), 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  --shadow-card: var(--shadow-card-raw);
+  --shadow-card-hover: var(--shadow-card-hover-raw);
+  --shadow-control: var(--shadow-control-raw);
+}
+
+/* 라이트 팔레트 — 쿨 슬레이트 중립 + 티일 액센트. */
+:root {
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --surface-hover: #eff2f5;
+  --edge: #e3e7ec;
+  --edge-strong: #ccd3dc;
+
+  --ink: #131820;
+  --muted: #55606e;
+  --faint: #8a93a0;
+
+  --accent: #0e7c86;
+  --accent-soft: #e2f1f2;
+
+  --primary: #151b23;
+  --primary-hover: #2a323d;
+  --on-primary: #f6f7f9;
+
+  --danger: #b42318;
+  --danger-hover: #911b12;
+  --danger-fg: #ffffff;
+  --danger-text: #b42318;
+  --danger-soft: #fef3f2;
+
+  --shadow-card-raw: 0 1px 2px 0 rgb(16 21 28 / 0.04), 0 1px 3px 0 rgb(16 21 28 / 0.05);
+  --shadow-card-hover-raw:
+    0 6px 16px -4px rgb(16 21 28 / 0.12), 0 2px 6px -2px rgb(16 21 28 / 0.08);
+  --shadow-control-raw: 0 1px 2px 0 rgb(16 21 28 / 0.05);
+}
+
+/* 다크 팔레트 — 딥 슬레이트(순흑 회피) + 밝은 티일 액센트. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #0c0f13;
+    --surface: #14181e;
+    --surface-hover: #1c222b;
+    --edge: #262d37;
+    --edge-strong: #3a434f;
+
+    --ink: #e8ecf1;
+    --muted: #9aa4b2;
+    --faint: #6b7480;
+
+    --accent: #37c2b9;
+    --accent-soft: #0f2e2f;
+
+    --primary: #e8ecf1;
+    --primary-hover: #cbd3dd;
+    --on-primary: #0c0f13;
+
+    --danger: #c33a28;
+    --danger-hover: #a52e1e;
+    --danger-fg: #ffffff;
+    --danger-text: #f0a093;
+    --danger-soft: #2a1512;
+
+    --shadow-card-raw: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-card-hover-raw: 0 8px 24px -6px rgb(0 0 0 / 0.6), 0 2px 8px -2px rgb(0 0 0 / 0.5);
+    --shadow-control-raw: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  }
+}
