@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { z } from 'zod';
 import { DEFAULT_PAGE_SIZE } from '@board/config';
+import { buttonClass } from '@board/ui';
 import { getPosts, PostList } from '@/features/board/index.server';
 
 // ingress(searchParam)는 엄격 Zod로 검증한다. 잘못된 값은 0페이지로 보정한다.
@@ -22,10 +23,7 @@ export default async function HomePage({
           <h1 className="text-title-md text-ink">게시글</h1>
           <p className="font-mono text-meta text-muted tabular-nums">총 {data.totalElements}개</p>
         </div>
-        <Link
-          href="/posts/new"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label text-on-primary shadow-control transition-colors duration-fast hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        <Link href="/posts/new" className={buttonClass('primary', 'shrink-0')}>
           새 글 작성
         </Link>
       </div>

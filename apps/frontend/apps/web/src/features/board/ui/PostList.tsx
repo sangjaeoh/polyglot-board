@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { buttonClass } from '@board/ui';
 import type { PostPageResponse } from '@/entities/post';
 import { PostCard } from './PostCard';
 
@@ -11,10 +12,7 @@ export function PostList({ page }: { page: PostPageResponse }) {
           <p className="text-emphasis text-ink">아직 글이 없습니다</p>
           <p className="text-caption text-muted">첫 글을 남겨 이 게시판을 시작하세요.</p>
         </div>
-        <Link
-          href="/posts/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label text-on-primary shadow-control transition-colors duration-fast hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        <Link href="/posts/new" className={buttonClass('primary')}>
           새 글 작성
         </Link>
       </div>

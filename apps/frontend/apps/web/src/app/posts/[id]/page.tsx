@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { buttonClass } from '@board/ui';
 import { ApiError, getPost } from '@/features/board/index.server';
 import { DeletePostButton, PostTime } from '@/features/board/index.client';
 import { type PostResponse } from '@/entities/post';
@@ -57,10 +58,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       </header>
       <div className="max-w-prose text-body whitespace-pre-wrap text-ink">{post.content}</div>
       <div className="flex items-center gap-3 border-t border-edge pt-6">
-        <Link
-          href={`/posts/${post.id}/edit`}
-          className="inline-flex items-center gap-2 rounded-lg border border-edge-strong bg-surface px-4 py-2.5 text-label text-ink shadow-control transition-colors duration-fast hover:bg-surface-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-        >
+        <Link href={`/posts/${post.id}/edit`} className={buttonClass('secondary')}>
           수정
         </Link>
         <DeletePostButton id={post.id} />
