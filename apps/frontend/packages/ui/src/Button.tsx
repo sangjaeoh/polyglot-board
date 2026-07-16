@@ -19,8 +19,8 @@ export function Button({ variant = 'primary', className, type, ...props }: Butto
     <button
       type={type ?? 'button'}
       className={clsx(
-        'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium',
-        'transition-[background-color,box-shadow,transform] duration-150 active:translate-y-px',
+        'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-label',
+        'transition-[background-color,box-shadow,transform] duration-fast active:translate-y-px',
         'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
         'disabled:cursor-not-allowed disabled:active:translate-y-0',
         variantClass[variant],

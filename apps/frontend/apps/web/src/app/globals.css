@@ -33,7 +33,7 @@
   inset-inline: 0;
   top: 0;
   height: 3px;
-  z-index: 50;
+  z-index: var(--z-overlay);
   overflow: hidden;
   pointer-events: none;
 }
@@ -48,7 +48,7 @@
   inset: 0;
   background-color: var(--color-accent);
   transform-origin: left center;
-  animation: route-progress-slide 1s ease-in-out infinite;
+  animation: route-progress-slide 1s var(--ease-standard) infinite;
 }
 
 /* 모션 최소화 선호 시에는 슬라이드 대신 정적 액센트 바로 표시한다. */

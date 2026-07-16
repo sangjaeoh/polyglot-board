@@ -23,15 +23,15 @@ export function DeletePostButton({ id }: { id: string }) {
       >
         <form action={formAction} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <h2 id={titleId} className="text-base font-semibold text-ink">
+            <h2 id={titleId} className="text-heading text-ink">
               게시글을 삭제할까요?
             </h2>
-            <p className="text-sm text-muted">삭제한 게시글은 되돌릴 수 없습니다.</p>
+            <p className="text-caption text-muted">삭제한 게시글은 되돌릴 수 없습니다.</p>
           </div>
           {state?.message ? (
             <p
               role="alert"
-              className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-sm text-danger-text"
+              className="rounded-lg border border-danger-text/25 bg-danger-soft px-3.5 py-3 text-caption text-danger-text"
             >
               {state.message}
             </p>

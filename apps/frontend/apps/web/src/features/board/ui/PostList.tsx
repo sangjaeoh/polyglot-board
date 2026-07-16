@@ -8,12 +8,12 @@ export function PostList({ page }: { page: PostPageResponse }) {
       <div className="flex flex-col items-center gap-5 rounded-2xl border border-dashed border-edge-strong bg-surface px-6 py-16 text-center shadow-card">
         <span aria-hidden className="h-8 w-[3px] rounded-full bg-accent" />
         <div className="flex flex-col gap-1.5">
-          <p className="text-base font-medium text-ink">아직 글이 없습니다</p>
-          <p className="text-sm text-muted">첫 글을 남겨 이 게시판을 시작하세요.</p>
+          <p className="text-emphasis text-ink">아직 글이 없습니다</p>
+          <p className="text-caption text-muted">첫 글을 남겨 이 게시판을 시작하세요.</p>
         </div>
         <Link
           href="/posts/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary shadow-control transition-colors duration-150 hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label text-on-primary shadow-control transition-colors duration-fast hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           새 글 작성
         </Link>
@@ -24,9 +24,9 @@ export function PostList({ page }: { page: PostPageResponse }) {
   const hasPrev = page.page > 0;
   const hasNext = page.page + 1 < page.totalPages;
   const pageLinkClass =
-    'inline-flex items-center gap-1.5 rounded-lg border border-edge bg-surface px-3.5 py-2 text-sm font-medium text-ink shadow-control transition-colors duration-150 hover:border-edge-strong hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
+    'inline-flex items-center gap-1.5 rounded-lg border border-edge bg-surface px-3.5 py-2 text-label text-ink shadow-control transition-colors duration-fast hover:border-edge-strong hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
   const pageDisabledClass =
-    'inline-flex items-center gap-1.5 rounded-lg border border-edge px-3.5 py-2 text-sm font-medium text-faint';
+    'inline-flex items-center gap-1.5 rounded-lg border border-edge px-3.5 py-2 text-label text-faint';
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,7 +45,7 @@ export function PostList({ page }: { page: PostPageResponse }) {
             <span aria-hidden>←</span> 이전
           </span>
         )}
-        <span className="font-mono text-xs text-muted tabular-nums">
+        <span className="font-mono text-meta text-muted tabular-nums">
           {page.page + 1} / {Math.max(page.totalPages, 1)}
         </span>
         {hasNext ? (

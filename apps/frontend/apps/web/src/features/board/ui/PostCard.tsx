@@ -7,27 +7,27 @@ export function PostCard({ post }: { post: PostSummary }) {
     <li>
       <Link
         href={`/posts/${post.id}`}
-        className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-edge bg-surface px-5 py-4 shadow-card transition-[border-color,box-shadow,transform] duration-150 hover:-translate-y-0.5 hover:border-edge-strong hover:shadow-card-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-edge bg-surface px-5 py-4 shadow-card transition-[border-color,box-shadow,transform] duration-fast hover:-translate-y-0.5 hover:border-edge-strong hover:shadow-card-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <span
           aria-hidden
-          className="absolute inset-y-3 left-0 w-[3px] origin-center scale-y-0 rounded-full bg-accent opacity-0 transition-[transform,opacity] duration-200 group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
+          className="absolute inset-y-3 left-0 w-[3px] origin-center scale-y-0 rounded-full bg-accent opacity-0 transition-[transform,opacity] duration-moderate group-hover:scale-y-100 group-hover:opacity-100 group-focus-visible:scale-y-100 group-focus-visible:opacity-100"
         />
         <div className="min-w-0 flex-1">
-          <h2 className="line-clamp-2 text-base font-medium text-ink transition-colors duration-150 group-hover:text-accent">
+          <h2 className="line-clamp-2 text-emphasis text-ink transition-colors duration-fast group-hover:text-accent">
             {post.title}
           </h2>
-          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-            <span className="font-medium text-muted">{post.author}</span>
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-caption">
+            <span className="text-label text-muted">{post.author}</span>
             <span aria-hidden className="text-faint">
               ·
             </span>
-            <PostTime iso={post.createdAt} className="font-mono text-xs text-faint" />
+            <PostTime iso={post.createdAt} className="font-mono text-meta text-faint" />
           </p>
         </div>
         <span
           aria-hidden
-          className="shrink-0 translate-x-0 font-mono text-faint transition-[transform,color] duration-200 group-hover:translate-x-0.5 group-hover:text-accent"
+          className="shrink-0 translate-x-0 font-mono text-faint transition-[transform,color] duration-moderate group-hover:translate-x-0.5 group-hover:text-accent"
         >
           →
         </span>

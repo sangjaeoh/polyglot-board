@@ -19,12 +19,12 @@ export default async function HomePage({
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between gap-4">
         <div className="flex flex-col gap-1.5">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">게시글</h1>
-          <p className="font-mono text-xs text-muted tabular-nums">총 {data.totalElements}개</p>
+          <h1 className="text-title-md text-ink">게시글</h1>
+          <p className="font-mono text-meta text-muted tabular-nums">총 {data.totalElements}개</p>
         </div>
         <Link
           href="/posts/new"
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-on-primary shadow-control transition-colors duration-150 hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label text-on-primary shadow-control transition-colors duration-fast hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           새 글 작성
         </Link>

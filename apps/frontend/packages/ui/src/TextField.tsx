@@ -14,7 +14,7 @@ export function TextField({ label, error, id, className, ...props }: TextFieldPr
   const errorId = `${inputId}-error`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={inputId} className="text-sm font-medium text-ink">
+      <label htmlFor={inputId} className="text-label text-ink">
         {label}
       </label>
       <input
@@ -22,8 +22,8 @@ export function TextField({ label, error, id, className, ...props }: TextFieldPr
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
         className={clsx(
-          'rounded-lg border bg-surface px-3.5 py-2.5 text-sm text-ink shadow-control',
-          'placeholder:text-faint transition-colors duration-150',
+          'rounded-lg border bg-surface px-3.5 py-2.5 text-caption text-ink shadow-control',
+          'placeholder:text-faint transition-colors duration-fast',
           'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
           error ? 'border-danger focus-visible:border-danger' : 'border-edge focus-visible:border-accent',
           className,
@@ -31,7 +31,7 @@ export function TextField({ label, error, id, className, ...props }: TextFieldPr
         {...props}
       />
       {error ? (
-        <p id={errorId} className="text-sm text-danger-text">
+        <p id={errorId} className="text-caption text-danger-text">
           {error}
         </p>
       ) : null}
