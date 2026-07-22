@@ -141,4 +141,5 @@ provided 계약 도입:
 
 ## 작업 로그
 
-- T1 완료 — `REQUIREMENTS.md`·`DOMAIN_MODEL.md` 신설(as-is 역산, 커머스 문서 형식), coding-conventions 용어집 소유를 backend 루트 두 문서로 갱신, AGENTS.md 앵커에 참조 추가. 반환 형상은 coding-conventions 소유로 참조만 해 T4 변경과 충돌 없음. 커밋: (본 커밋 — 다음 태스크에서 해시 기입)
+- T1 완료 — `REQUIREMENTS.md`·`DOMAIN_MODEL.md` 신설(as-is 역산, 커머스 문서 형식), coding-conventions 용어집 소유를 backend 루트 두 문서로 갱신, AGENTS.md 앵커에 참조 추가. 반환 형상은 coding-conventions 소유로 참조만 해 T4 변경과 충돌 없음. 커밋: 4130113
+- T2 완료 — domain-module 화이트리스트를 `domain-shared`·`:module-common:`으로 정렬(common-messaging 유령 참조 제거), app-module에서 `:module-external:` 제거·`:module-events:`·`:module-query:` 추가, app-migration의 domain-board를 `runtimeOnly` 전환(마이그레이션 테스트 통과 확인). 커밋: (본 커밋 — 다음 태스크에서 해시 기입)

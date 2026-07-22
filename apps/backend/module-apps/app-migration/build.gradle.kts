@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    // 도메인 모듈이 마이그레이션 SQL(db/migration/{schema})을 클래스패스로 제공한다.
-    implementation(project(":module-domains:domain-board"))
+    // 도메인 모듈이 마이그레이션 SQL(db/migration/{schema})을 클래스패스로 제공한다. 런타임 전용 의존(마이그레이션 리소스 취득 목적).
+    runtimeOnly(project(":module-domains:domain-board"))
     // SchemaFlywayFactory(common-jpa) — 도메인 스키마별 Flyway 인스턴스 생성.
     implementation(project(":module-common:common-jpa"))
     implementation(libs.spring.boot.starter.jdbc)
