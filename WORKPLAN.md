@@ -44,7 +44,7 @@
 
 ### P1 — 게이트 복구·신설 (root-infra)
 
-- [ ] **T2. drift:check의 삭제·untracked 허점 보강** — 표면: root-infra
+- [x] **T2. drift:check의 삭제·untracked 허점 보강** — 표면: root-infra
   - 근거: `docs/sharing.md` "drift 게이트는 계약과 생성물의 일치를 강제한다". 현행 `git diff --exit-code`는 untracked 파일을 비교하지 않아 계약 파일이 HEAD에서 삭제된 상태(최대 drift)를 통과시킴 — T1의 사고가 실제로 통과한 경로.
   - 내용: 루트 `package.json`의 `drift:check`가 대상 경로의 untracked·삭제 상태도 실패시키도록 보강(방식은 설계에서 결정, 예: `git status --porcelain` 병행 검사 또는 `git add -N` 후 diff).
   - 완료 기준: openapi.json을 임시 삭제한 상태에서 `pnpm run drift:check`가 non-zero exit(검증 후 원복). 정상 상태에서 통과.
@@ -135,4 +135,5 @@
 
 (반복마다 1–3줄: 작업 ID, 커밋 해시, 핵심 결정)
 
-- T1: `pnpm openapi` 코드퍼스트 재방출로 복구(가이드 정본 경로). 삭제 직전(`eb72d33^`)과 바이트 동일 검증, codegen 무변경, OpenApiSnapshotTest `--rerun` 통과, `pnpm verify` 전체 통과. 커밋: 이 로그를 포함한 T1 단일 커밋(`chore(contract)`) — 자기 해시는 커밋 전 기록 불가, git log로 확인.
+- T1: `pnpm openapi` 코드퍼스트 재방출로 복구(가이드 정본 경로). 삭제 직전(`eb72d33^`)과 바이트 동일 검증, codegen 무변경, OpenApiSnapshotTest `--rerun` 통과, `pnpm verify` 전체 통과. 커밋 `bc4e666`.
+- T2: drift:check에 `git ls-files --others --exclude-standard` fail-closed 체인 추가 — untracked·HEAD 삭제 사고 상태 검출(T1 사고 경로 재현으로 실증). staged 포함 porcelain 전체 검사는 정상 stage→verify 플로우를 깨는 DX 회귀라 기각(설계 리뷰 합의). 잔여 구멍(로그·후속 후보): staged-stray, 커밋된 stray(근본 해결은 codegen clean-regeneration), diff·ls-files 절의 경로 목록 2회 중복. 커밋: 이 로그 포함 단일 커밋, git log로 확인.

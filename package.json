@@ -13,7 +13,7 @@
     "typecheck": "turbo run typecheck",
     "verify": "turbo run verify && pnpm run depcruise:frontend && pnpm run drift:check",
     "depcruise:frontend": "cd apps/frontend && depcruise apps packages --config .dependency-cruiser.cjs",
-    "drift:check": "turbo run codegen && git diff --exit-code -- packages/shared-types/src/generated apps/backend/docs/openapi",
+    "drift:check": "turbo run codegen && git diff --exit-code -- packages/shared-types/src/generated apps/backend/docs/openapi && u=$(git -c core.quotePath=false ls-files --others --exclude-standard -- packages/shared-types/src/generated apps/backend/docs/openapi) && { test -z \"$u\" || { echo 'drift:check: 계약·생성물 경로에 untracked 파일 존재(생성물은 커밋한다):'; printf '%s\\n' \"$u\"; false; }; }",
     "dev": "turbo run dev"
   },
   "devDependencies": {
