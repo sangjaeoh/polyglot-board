@@ -67,7 +67,7 @@
   - 주의: 패키지 이동이 계약 표면(경로·operationId·스키마명)을 바꾸지 않는지 확인 — 바뀌면 cross-language 승격(T1 파이프라인으로 재방출·재생성 커밋).
   - 완료 기준: `presentation` 패키지 0건. `./gradlew build` 통과. `pnpm run drift:check` 통과.
 
-- [ ] **T6. `module-tests/test-architecture` 신설·아키텍처 테스트 이전** — 표면: backend-only
+- [x] **T6. `module-tests/test-architecture` 신설·아키텍처 테스트 이전** — 표면: backend-only
   - 근거: `apps/backend/docs/architecture.md` "아키텍처 테스트는 `module-tests/test-architecture` 모듈이 소유한다", "앱이나 애플리케이션 모듈 안에 두지 않는다", "검증 대상은 모듈 목록에서 파생한다". 현재 app-api 테스트 소스에 위치, 대상 패키지 하드코딩.
   - 내용: `:module-tests:test-architecture` 모듈 신설(settings 등록, 필요 시 계층 컨벤션 플러그인 — 문서의 "첫 모듈 생성 시 함께 구현" 규칙 준수), ArchitectureTest 이전, 검증 대상 패키지를 모듈 목록에서 파생하도록 개선, base finder 금지 규칙에 문서 예외(`deletedAt` 없는 엔티티 허용) 반영·board 도메인 하드코딩 제거.
   - 완료 기준: app-api 테스트 소스에 ArchUnit 부재. `./gradlew build`에서 신규 모듈 테스트가 실행·통과.
@@ -140,3 +140,4 @@
 - T3: `.github/workflows/verify.yml` 신설 — mise-action(SHA 핀, mise 2026.7.11 핀, `env: true`로 JAVA_HOME→corretto-25)·setup-gradle(SHA 핀) 후 `pnpm install --frozen-lockfile && pnpm verify`만 실행(CI 전용 로직 0). push 전 브랜치+PR 트리거(직push 워크플로우 대응), main은 cancel 제외. 검증: actionlint 1.7.12 통과, 로컬 CI 동일 시퀀스 통과. 한계·후속: 원격 첫 실행은 push 전이라 미검증 / required status check·브랜치 보호는 리포 설정 영역 / T4는 base ref fetch 추가 필요(fetch-depth 1 부족) / .mise.toml fuzzy 버전(`"9"` 등) 정밀 핀은 별도 root-infra 판단.
 - T4: `scripts/oasdiff-check.sh` + 루트 `oasdiff:check` 스크립트 + CI 스텝(fetch-depth 0) 신설. base=merge-base(HEAD, origin/main), base에 계약 없으면 신규 계약 skip-pass(현 origin/main 상태), Docker `tufin/oasdiff:v1.24.0` digest 핀, stdin+단일 파일 ro 마운트(Colima 호환), `--fail-on ERR`(WARN 승격·의도적 breaking용 err-ignore는 T8에서 판단). verify 체인 미포함(비밀폐적 게이트라 별도 스텝 — 설계 리뷰 합의). 검증: DELETE 오퍼레이션 임시 제거 시 exit 1 검출 후 원복, 무변경 exit 0, actionlint·`pnpm verify` 통과. 한계: main push는 self-compare 공허 통과(사전 게이트는 브랜치 push/PR에서 발화).
 - T5: `presentation.v1` 7파일(+통합 테스트) → `web.v1.post` 이동, ArchUnit `controllers_reside_in_web`(`com.board.api.web..`) 갱신. 해석 확정: `*View`/facade-view는 존재 시 배치 규칙(현 0건, 응답 DTO는 web 슬라이스 소유가 정합) — facade Info 반환 유지. PageResponse는 유일 소비자+T8 소멸 예정으로 post 슬라이스 임시 배치(T8 전 두 번째 리소스 등장 시 재배치). 계약 불변 증명: 재방출 diff 0·스냅샷 테스트 통과 → backend-only 유지. `./gradlew build`·drift:check 통과. 컨트롤러명(Board vs 리소스 post) 정렬은 태그 변경=계약 변경이라 T8 후보로만 기록.
+- T6: `:module-tests:test-architecture` 신설(convention.java-common만 적용 — 가이드 특칙), 전 모듈을 settings 목록에서 파생 배선. ArchitectureTest는 클래스패스 파생(앱=@SpringBootApplication 소재, 도메인=마커 서브패키지)+closure 단언으로 board 하드코딩 제거(시스템 프로퍼티 안은 이중 인코딩·IDE 파손으로 설계 리뷰 기각). base finder 규칙에 deletedAt 예외 구현(제네릭 해석, 타입 변수 fail-open 구멍은 코드 리뷰가 검출·수정, 픽스처 3케이스 상시 검증). controllers는 `..web..` 고정(앱별 파생 과설계 기각). 카나리아(PostReader base findById) 검출 확인. 기록: OpenAPI 애노테이션·int @RequestParam 규칙 미구현은 기존 드리프트로 T7 소유 / isolated projects 채택 시 subprojects 순회 재설계 필요.

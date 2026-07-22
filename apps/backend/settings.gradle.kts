@@ -21,4 +21,5 @@ include(
     ":module-common:common-web",
     ":module-domains:domain-board",
     ":module-apps:app-api",
+    ":module-tests:test-architecture",
 )
