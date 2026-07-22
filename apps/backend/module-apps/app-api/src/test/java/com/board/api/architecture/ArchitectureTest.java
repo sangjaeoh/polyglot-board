@@ -69,13 +69,10 @@ class ArchitectureTest {
             .should()
             .haveNameMatching(".*(Reader|Appender|Modifier|Remover|Processor|Validator)");
 
-    /** 컨트롤러는 presentation 계층에만 둔다. */
+    /** 컨트롤러는 web 계층에만 둔다(web/v{n}은 버전 바깥 축·리소스 안쪽 축으로 URL을 미러링). */
     @ArchTest
-    static final ArchRule controllers_reside_in_presentation = classes()
-            .that()
-            .haveSimpleNameEndingWith("Controller")
-            .should()
-            .resideInAPackage("com.board.api.presentation..");
+    static final ArchRule controllers_reside_in_web =
+            classes().that().haveSimpleNameEndingWith("Controller").should().resideInAPackage("com.board.api.web..");
 
     /** 소프트삭제 엔티티는 base JpaRepository finder(findById·findAll·count) 직접 호출을 금지한다(삭제분 노출). */
     @ArchTest

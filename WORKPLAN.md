@@ -61,7 +61,7 @@
 
 ### P2 — 백엔드 구조 정렬 (backend-only, 계약 표면 변경 시 cross-language 승격)
 
-- [ ] **T5. `presentation` → `web` 패키지 정렬 + 리소스 슬라이스** — 표면: backend-only
+- [x] **T5. `presentation` → `web` 패키지 정렬 + 리소스 슬라이스** — 표면: backend-only
   - 근거: `apps/backend/docs/architecture.md` "중심 패키지: `web`, `facade`", "`web/v{n}`은 버전을 바깥 축, 리소스를 안쪽 축으로 구성해 `/api/v{n}/{리소스}` URL을 미러링한다". 실제는 `com.board.api.presentation.v1` 평탄 구조이며 ArchUnit이 반대 배치를 강제 중.
   - 내용: `com.board.api.presentation.v1` → `com.board.api.web.v1.post`로 이동(컨트롤러+DTO), ArchUnit `controllers_reside_in_presentation` 등 관련 규칙 동기 수정, 통합 테스트 패키지 미러링(`web.v1.post`)까지 함께. facade 응답 소유(architecture.md의 "facade가 응답을 만든다"·"`*View`는 facade/view 소유") 해석을 설계 단계에서 확정하고 필요 시 반영.
   - 주의: 패키지 이동이 계약 표면(경로·operationId·스키마명)을 바꾸지 않는지 확인 — 바뀌면 cross-language 승격(T1 파이프라인으로 재방출·재생성 커밋).
@@ -139,3 +139,4 @@
 - T2: drift:check에 `git ls-files --others --exclude-standard` fail-closed 체인 추가 — untracked·HEAD 삭제 사고 상태 검출(T1 사고 경로 재현으로 실증). staged 포함 porcelain 전체 검사는 정상 stage→verify 플로우를 깨는 DX 회귀라 기각(설계 리뷰 합의). 잔여 구멍(로그·후속 후보): staged-stray, 커밋된 stray(근본 해결은 codegen clean-regeneration), diff·ls-files 절의 경로 목록 2회 중복. 커밋 `c7f4cff`.
 - T3: `.github/workflows/verify.yml` 신설 — mise-action(SHA 핀, mise 2026.7.11 핀, `env: true`로 JAVA_HOME→corretto-25)·setup-gradle(SHA 핀) 후 `pnpm install --frozen-lockfile && pnpm verify`만 실행(CI 전용 로직 0). push 전 브랜치+PR 트리거(직push 워크플로우 대응), main은 cancel 제외. 검증: actionlint 1.7.12 통과, 로컬 CI 동일 시퀀스 통과. 한계·후속: 원격 첫 실행은 push 전이라 미검증 / required status check·브랜치 보호는 리포 설정 영역 / T4는 base ref fetch 추가 필요(fetch-depth 1 부족) / .mise.toml fuzzy 버전(`"9"` 등) 정밀 핀은 별도 root-infra 판단.
 - T4: `scripts/oasdiff-check.sh` + 루트 `oasdiff:check` 스크립트 + CI 스텝(fetch-depth 0) 신설. base=merge-base(HEAD, origin/main), base에 계약 없으면 신규 계약 skip-pass(현 origin/main 상태), Docker `tufin/oasdiff:v1.24.0` digest 핀, stdin+단일 파일 ro 마운트(Colima 호환), `--fail-on ERR`(WARN 승격·의도적 breaking용 err-ignore는 T8에서 판단). verify 체인 미포함(비밀폐적 게이트라 별도 스텝 — 설계 리뷰 합의). 검증: DELETE 오퍼레이션 임시 제거 시 exit 1 검출 후 원복, 무변경 exit 0, actionlint·`pnpm verify` 통과. 한계: main push는 self-compare 공허 통과(사전 게이트는 브랜치 push/PR에서 발화).
+- T5: `presentation.v1` 7파일(+통합 테스트) → `web.v1.post` 이동, ArchUnit `controllers_reside_in_web`(`com.board.api.web..`) 갱신. 해석 확정: `*View`/facade-view는 존재 시 배치 규칙(현 0건, 응답 DTO는 web 슬라이스 소유가 정합) — facade Info 반환 유지. PageResponse는 유일 소비자+T8 소멸 예정으로 post 슬라이스 임시 배치(T8 전 두 번째 리소스 등장 시 재배치). 계약 불변 증명: 재방출 diff 0·스냅샷 테스트 통과 → backend-only 유지. `./gradlew build`·drift:check 통과. 컨트롤러명(Board vs 리소스 post) 정렬은 태그 변경=계약 변경이라 T8 후보로만 기록.

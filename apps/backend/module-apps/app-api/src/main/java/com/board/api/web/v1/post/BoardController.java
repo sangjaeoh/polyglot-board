@@ -1,4 +1,4 @@
-package com.board.api.presentation.v1;
+package com.board.api.web.v1.post;
 
 import com.board.api.facade.BoardFacade;
 import com.board.board.info.PostInfo;

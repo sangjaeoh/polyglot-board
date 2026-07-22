@@ -1,4 +1,4 @@
 @NullMarked
-package com.board.api.presentation.v1;
+package com.board.api.web.v1.post;
 
 import org.jspecify.annotations.NullMarked;

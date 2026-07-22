@@ -1,4 +1,4 @@
-package com.board.api.presentation.v1;
+package com.board.api.web.v1.post;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

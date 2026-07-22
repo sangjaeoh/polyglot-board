@@ -1,4 +1,4 @@
-package com.board.api.presentation.v1;
+package com.board.api.web.v1.post;
 
 import java.util.List;
 import java.util.function.Function;

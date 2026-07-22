@@ -1,4 +1,4 @@
-package com.board.api.presentation;
+package com.board.api.web.v1.post;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
