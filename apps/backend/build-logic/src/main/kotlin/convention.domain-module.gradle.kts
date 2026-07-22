@@ -1,4 +1,4 @@
-// domain-{name} 모듈. JPA를 제공하고 허용 의존은 common-core·jpa·messaging로 화이트리스트한다.
+// domain-{name} 모듈. JPA를 제공하고 허용 의존은 domain-shared·common-core·jpa·messaging로 화이트리스트한다.
 plugins {
     id("convention.java-common")
 }
@@ -16,10 +16,11 @@ dependencies {
     "testRuntimeOnly"(libs.lib("postgresql"))
 }
 
-// 타 도메인·infra·external·web·auth 의존 금지. 허용은 common-core·jpa·messaging만.
+// 타 도메인·infra·external·web·auth 의존 금지. 허용은 domain-shared·common-core·jpa·messaging만.
 enforceAllowedProjectDependencies(
     "domain",
     listOf(
+        ":module-domains:domain-shared",
         ":module-common:common-core",
         ":module-common:common-jpa",
         ":module-common:common-messaging",
