@@ -1,4 +1,4 @@
-package com.board.board.entity;
+package com.board.board.domain;
 
 import com.board.common.core.id.UuidV7Generator;
 import com.board.common.jpa.entity.BaseTimeEntity;

@@ -1,4 +1,4 @@
-package com.board.board.exception;
+package com.board.board.domain.exception;
 
 import com.board.common.core.error.BaseException;
 

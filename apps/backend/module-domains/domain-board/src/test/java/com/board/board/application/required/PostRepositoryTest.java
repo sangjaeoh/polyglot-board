@@ -1,8 +1,8 @@
-package com.board.board.repository;
+package com.board.board.application.required;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.board.board.entity.Post;
+import com.board.board.domain.Post;
 import com.board.board.support.ContainerConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

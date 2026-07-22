@@ -1,10 +1,10 @@
 package com.board.api.facade;
 
-import com.board.board.info.PostInfo;
-import com.board.board.service.PostAppender;
-import com.board.board.service.PostModifier;
-import com.board.board.service.PostReader;
-import com.board.board.service.PostRemover;
+import com.board.board.application.info.PostInfo;
+import com.board.board.application.provided.PostAppender;
+import com.board.board.application.provided.PostModifier;
+import com.board.board.application.provided.PostReader;
+import com.board.board.application.provided.PostRemover;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

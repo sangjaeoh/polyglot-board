@@ -1,7 +1,7 @@
 package com.board.api.web.v1.post;
 
 import com.board.api.facade.BoardFacade;
-import com.board.board.info.PostInfo;
+import com.board.board.application.info.PostInfo;
 import com.board.common.web.pagination.PaginationRequest;
 import com.board.common.web.pagination.PaginationResponse;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,27 +1,24 @@
-package com.board.board.service;
+package com.board.board.application;
 
-import com.board.board.entity.Post;
-import com.board.board.exception.PostNotFoundException;
-import com.board.board.repository.PostRepository;
+import com.board.board.application.provided.PostModifier;
+import com.board.board.application.required.PostRepository;
+import com.board.board.domain.Post;
+import com.board.board.domain.exception.PostNotFoundException;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 게시글 수정을 담당한다. */
+/** {@link PostModifier} 구현. 수정은 dirty checking으로 영속된다. */
 @Service
-public class PostModifier {
+class DefaultPostModifier implements PostModifier {
 
     private final PostRepository postRepository;
 
-    public PostModifier(PostRepository postRepository) {
+    DefaultPostModifier(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
-    /**
-     * 활성 게시글의 제목·본문을 수정한다.
-     *
-     * @throws PostNotFoundException 활성 게시글이 없을 때
-     */
+    @Override
     @Transactional
     public void edit(UUID id, String title, String content) {
         Post post = postRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(PostNotFoundException::new);

@@ -1,4 +1,4 @@
 @NullMarked
-package com.board.board.info;
+package com.board.board.domain;
 
 import org.jspecify.annotations.NullMarked;

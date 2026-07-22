@@ -1,6 +1,6 @@
-package com.board.board.info;
+package com.board.board.application.info;
 
-import com.board.board.entity.Post;
+import com.board.board.domain.Post;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;

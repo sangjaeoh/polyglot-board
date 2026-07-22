@@ -142,4 +142,5 @@ provided 계약 도입:
 ## 작업 로그
 
 - T1 완료 — `REQUIREMENTS.md`·`DOMAIN_MODEL.md` 신설(as-is 역산, 커머스 문서 형식), coding-conventions 용어집 소유를 backend 루트 두 문서로 갱신, AGENTS.md 앵커에 참조 추가. 반환 형상은 coding-conventions 소유로 참조만 해 T4 변경과 충돌 없음. 커밋: 4130113
-- T2 완료 — domain-module 화이트리스트를 `domain-shared`·`:module-common:`으로 정렬(common-messaging 유령 참조 제거), app-module에서 `:module-external:` 제거·`:module-events:`·`:module-query:` 추가, app-migration의 domain-board를 `runtimeOnly` 전환(마이그레이션 테스트 통과 확인). 커밋: (본 커밋 — 다음 태스크에서 해시 기입)
+- T2 완료 — domain-module 화이트리스트를 `domain-shared`·`:module-common:`으로 정렬(common-messaging 유령 참조 제거), app-module에서 `:module-external:` 제거·`:module-events:`·`:module-query:` 추가, app-migration의 domain-board를 `runtimeOnly` 전환(마이그레이션 테스트 통과 확인). 커밋: 5a95613
+- T3 완료 — 3구역 재편(domain·application/provided·required·info, provided 인터페이스 4종 + package-private Default* 구현) + 아키텍처 테스트 정렬(구역 마커 파생, JPA 애노테이션 기반 비노출, 구역 의존 방향·adapter 비노출·provided/info만 소비·시그니처 JPA 금지·구현 package-private 신설). 판정: info의 정적 `from(entity)` 팩토리는 coding-conventions 규정 패턴이라 시그니처 규칙에서 명시 예외(모듈 밖은 엔티티 임포트 불가로 호출 불가). 커밋: (본 커밋 — 다음 태스크에서 해시 기입)

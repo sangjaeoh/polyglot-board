@@ -1,6 +1,6 @@
-package com.board.board.repository;
+package com.board.board.application.required;
 
-import com.board.board.entity.Post;
+import com.board.board.domain.Post;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
