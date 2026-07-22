@@ -25,7 +25,6 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
-import com.tngtech.archunit.library.freeze.FreezingArchRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
@@ -312,7 +312,8 @@ class ArchitectureTest {
                                     + ": @Parameter(description) 부재");
                         }
                     }
-                    if (parameter.isAnnotatedWith(RequestBody.class)) {
+                    if (parameter.isAnnotatedWith(RequestBody.class)
+                            || parameter.isAnnotatedWith(ParameterObject.class)) {
                         collectBoardTypes(parameter.getType(), dtoTypes);
                     }
                 }
@@ -361,17 +362,15 @@ class ArchitectureTest {
 
     /**
      * web 컨트롤러 핸들러는 int·Integer {@code @RequestParam}을 직접 선언하지 않는다 — 페이징 GET은 common-web
-     * {@code PaginationRequest}({@code @Valid @ParameterObject})를 사용한다. 규칙은 무예외 전면 금지이며, 현행
-     * 위반(listPosts의 page·size)은 FreezingArchRule 스토어에 동결돼 있고 T8의 PaginationRequest 적용으로
-     * 자기청산된다.
+     * {@code PaginationRequest}({@code @Valid @ParameterObject})를 사용한다. 무예외 전면 금지.
      */
     @ArchTest
-    static final ArchRule web_handlers_do_not_declare_int_request_params = FreezingArchRule.freeze(methods()
+    static final ArchRule web_handlers_do_not_declare_int_request_params = methods()
             .that()
             .areDeclaredInClassesThat()
             .areAnnotatedWith(RestController.class)
             .should(notDeclareIntRequestParams())
-            .because("int 페이징 파라미터는 PaginationRequest로 대체한다 — 계약과 검증을 한 곳(common-web)이 소유한다"));
+            .because("int 페이징 파라미터는 PaginationRequest로 대체한다 — 계약과 검증을 한 곳(common-web)이 소유한다");
 
     private static ArchCondition<JavaMethod> notDeclareIntRequestParams() {
         return new ArchCondition<>("not declare int/Integer @RequestParam directly") {

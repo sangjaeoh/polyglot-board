@@ -1,7 +1,7 @@
 #!/bin/sh
 # oasdiff 게이트: base(merge-base) 대비 계약 파괴적 변경을 검사한다 (docs/sharing.md).
-# --fail-on ERR: 확정 파괴(ERR)만 실패 처리. WARN 승격과 의도적 breaking 처리(err-ignore)는
-# T8(페이지네이션 1-based 전환)에서 함께 판단한다.
+# --fail-on ERR: 확정 파괴(ERR)만 실패 처리. T8 판단 결과 — WARN 승격 보류(base skip-pass 상태라
+# 승격 자체가 미검증), err-ignore 미배선(의도적 breaking은 원자 커밋+통합 테스트가 방어).
 # oasdiff 버전 핀이 .mise.toml 밖의 제2 채널인 것은 인지된 트레이드오프다(mise 레지스트리 부재로 Docker 사용).
 set -eu
 cd "$(git rev-parse --show-toplevel)"

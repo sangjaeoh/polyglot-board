@@ -4,8 +4,8 @@ import { DEFAULT_PAGE_SIZE } from '@board/config';
 import { buttonClass } from '@board/ui';
 import { getPosts, PostList } from '@/features/board/index.server';
 
-// ingress(searchParam)는 엄격 Zod로 검증한다. 잘못된 값은 0페이지로 보정한다.
-const pageParamSchema = z.coerce.number().int().min(0).catch(0);
+// ingress(searchParam)는 엄격 Zod로 검증한다. 잘못된 값은 1페이지(1-based)로 보정한다.
+const pageParamSchema = z.coerce.number().int().min(1).catch(1);
 
 export default async function HomePage({
   searchParams,

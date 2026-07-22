@@ -19,8 +19,8 @@ export function PostList({ page }: { page: PostPageResponse }) {
     );
   }
 
-  const hasPrev = page.page > 0;
-  const hasNext = page.page + 1 < page.totalPages;
+  const hasPrev = page.page > 1;
+  const hasNext = page.page < page.totalPages;
   const pageLinkClass =
     'inline-flex items-center gap-1.5 rounded-lg border border-edge bg-surface px-3.5 py-2 text-label text-ink shadow-control transition-colors duration-fast hover:border-edge-strong hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent';
   const pageDisabledClass =
@@ -44,7 +44,7 @@ export function PostList({ page }: { page: PostPageResponse }) {
           </span>
         )}
         <span className="font-mono text-meta text-muted tabular-nums">
-          {page.page + 1} / {Math.max(page.totalPages, 1)}
+          {page.page} / {Math.max(page.totalPages, 1)}
         </span>
         {hasNext ? (
           <Link href={`/?page=${page.page + 1}`} className={pageLinkClass}>

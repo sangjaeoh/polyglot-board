@@ -2,13 +2,14 @@ package com.board.api.web.v1.post;
 
 import com.board.api.facade.BoardFacade;
 import com.board.board.info.PostInfo;
+import com.board.common.web.pagination.PaginationRequest;
+import com.board.common.web.pagination.PaginationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import java.util.UUID;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,15 +34,13 @@ public class BoardController {
         this.boardFacade = boardFacade;
     }
 
-    /** 활성 게시글을 최신순으로 페이지 조회한다. 범위 밖 page·size는 400이다(계약의 min·max와 정합). */
+    /** 활성 게시글을 최신순으로 페이지 조회한다. 요청은 1-based이고 범위 밖 page·size는 400이다(계약의 min·max와 정합). */
     @GetMapping
     @Operation(summary = "활성 게시글을 최신순으로 페이지 조회한다")
-    @ApiResponse(responseCode = "200", description = "게시글 페이지")
-    public PageResponse<PostSummaryResponse> listPosts(
-            @Parameter(description = "0-based 페이지 번호") @RequestParam(defaultValue = "0") @Min(0) int page,
-            @Parameter(description = "페이지 크기(1-100)") @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
-        Page<PostInfo> posts = boardFacade.getPosts(page, size);
-        return PageResponse.of(posts, PostSummaryResponse::from);
+    @ApiResponse(responseCode = "200", description = "게시글 페이지(1-based)")
+    public PaginationResponse<PostSummaryResponse> listPosts(@Valid @ParameterObject PaginationRequest pagination) {
+        Page<PostInfo> posts = boardFacade.getPosts(pagination.zeroBasedPage(), pagination.size());
+        return PaginationResponse.from(posts.map(PostSummaryResponse::from));
     }
 
     /** 게시글 상세를 조회한다. */

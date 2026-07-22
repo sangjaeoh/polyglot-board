@@ -1,8 +1,8 @@
 {
   "components" : {
     "schemas" : {
-      "PageResponsePostSummaryResponse" : {
-        "description" : "오프셋 페이지네이션 응답",
+      "PaginationResponsePostSummaryResponse" : {
+        "description" : "오프셋 페이지네이션 응답(1-based)",
         "properties" : {
           "content" : {
             "description" : "페이지 항목 목록",
@@ -12,11 +12,11 @@
             "type" : "array"
           },
           "page" : {
-            "description" : "0-based 페이지 번호",
+            "description" : "1-based 페이지 번호",
             "format" : "int32",
             "type" : "integer"
           },
-          "size" : {
+          "pageSize" : {
             "description" : "페이지 크기",
             "format" : "int32",
             "type" : "integer"
@@ -32,7 +32,7 @@
             "type" : "integer"
           }
         },
-        "required" : [ "content", "page", "size", "totalElements", "totalPages" ],
+        "required" : [ "content", "page", "pageSize", "totalElements", "totalPages" ],
         "type" : "object"
       },
       "PostCreateRequest" : {
@@ -199,14 +199,15 @@
       "get" : {
         "operationId" : "listPosts",
         "parameters" : [ {
-          "description" : "0-based 페이지 번호",
+          "description" : "1-based 페이지 번호",
           "in" : "query",
           "name" : "page",
           "required" : false,
           "schema" : {
-            "default" : 0,
+            "default" : 1,
+            "description" : "1-based 페이지 번호",
             "format" : "int32",
-            "minimum" : 0,
+            "minimum" : 1,
             "type" : "integer"
           }
         }, {
@@ -216,6 +217,7 @@
           "required" : false,
           "schema" : {
             "default" : 20,
+            "description" : "페이지 크기(1-100)",
             "format" : "int32",
             "maximum" : 100,
             "minimum" : 1,
@@ -227,11 +229,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PageResponsePostSummaryResponse"
+                  "$ref" : "#/components/schemas/PaginationResponsePostSummaryResponse"
                 }
               }
             },
-            "description" : "게시글 페이지"
+            "description" : "게시글 페이지(1-based)"
           },
           "400" : {
             "content" : {

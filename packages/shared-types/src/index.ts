@@ -32,7 +32,7 @@ export const problemDetailSchema = z.object({
 });
 
 export type PostResponse = z.infer<typeof postResponseSchema>;
-// 주의(타입이 거짓말하는 지점): PageResponse.totalElements는 계약상 int64다. TS number는 2^53 초과에서
+// 주의(타입이 거짓말하는 지점): PaginationResponse.totalElements는 계약상 int64다. TS number는 2^53 초과에서
 // 정밀도를 잃는다. 게시판 규모에선 도달 불가라 number로 둔다 — 대규모 카운트면 string/bigint로 승격한다.
 export type PostPageResponse = z.infer<typeof postPageResponseSchema>;
 export type PostSummary = PostPageResponse['content'][number];

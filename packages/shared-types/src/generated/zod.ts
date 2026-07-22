@@ -10,8 +10,7 @@ import * as zod from "zod";
 /**
  * @summary 활성 게시글을 최신순으로 페이지 조회한다
  */
-export const listPostsQueryPageDefault = 0;
-export const listPostsQueryPageMin = 0;
+export const listPostsQueryPageDefault = 1;
 
 export const listPostsQuerySizeDefault = 20;
 export const listPostsQuerySizeMax = 100;
@@ -19,9 +18,9 @@ export const listPostsQuerySizeMax = 100;
 export const listPostsQueryParams = zod.object({
   page: zod
     .number()
-    .min(listPostsQueryPageMin)
-    .optional()
-    .describe("0-based 페이지 번호"),
+    .min(1)
+    .default(listPostsQueryPageDefault)
+    .describe("1-based 페이지 번호"),
   size: zod
     .number()
     .min(1)
@@ -44,12 +43,12 @@ export const listPostsResponse = zod
           .describe("게시글 목록 항목 응답"),
       )
       .describe("페이지 항목 목록"),
-    page: zod.number().describe("0-based 페이지 번호"),
-    size: zod.number().describe("페이지 크기"),
+    page: zod.number().describe("1-based 페이지 번호"),
+    pageSize: zod.number().describe("페이지 크기"),
     totalElements: zod.number().describe("전체 항목 수"),
     totalPages: zod.number().describe("전체 페이지 수"),
   })
-  .describe("오프셋 페이지네이션 응답");
+  .describe("오프셋 페이지네이션 응답(1-based)");
 
 /**
  * @summary 게시글을 작성한다
