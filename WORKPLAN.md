@@ -49,7 +49,7 @@
   - 내용: 루트 `package.json`의 `drift:check`가 대상 경로의 untracked·삭제 상태도 실패시키도록 보강(방식은 설계에서 결정, 예: `git status --porcelain` 병행 검사 또는 `git add -N` 후 diff).
   - 완료 기준: openapi.json을 임시 삭제한 상태에서 `pnpm run drift:check`가 non-zero exit(검증 후 원복). 정상 상태에서 통과.
 
-- [ ] **T3. CI 워크플로 도입** — 표면: root-infra
+- [x] **T3. CI 워크플로 도입** — 표면: root-infra
   - 근거: `docs/architecture.md` "경계는 리뷰가 아닌 검사로 강제한다", `docs/sharing.md` "…CI가 실패한다". 현재 `.github/` 부재로 모든 게이트가 로컬 수동 실행 의존.
   - 내용: `.github/workflows`에 verify 파이프라인 신설 — mise 기반 툴체인(corretto-25·node 24·pnpm 9), Docker 가용 러너에서 `pnpm verify` 실행. `apps/frontend/docs/code-quality.md`의 "로컬 명령과 CI 명령은 동일하다"를 준수(스크립트 재사용, CI 전용 로직 금지).
   - 완료 기준: 워크플로 파일 존재, 실행 명령이 루트 `package.json` 스크립트와 동일, 로컬에서 동일 명령 통과.
@@ -136,4 +136,5 @@
 (반복마다 1–3줄: 작업 ID, 커밋 해시, 핵심 결정)
 
 - T1: `pnpm openapi` 코드퍼스트 재방출로 복구(가이드 정본 경로). 삭제 직전(`eb72d33^`)과 바이트 동일 검증, codegen 무변경, OpenApiSnapshotTest `--rerun` 통과, `pnpm verify` 전체 통과. 커밋 `bc4e666`.
-- T2: drift:check에 `git ls-files --others --exclude-standard` fail-closed 체인 추가 — untracked·HEAD 삭제 사고 상태 검출(T1 사고 경로 재현으로 실증). staged 포함 porcelain 전체 검사는 정상 stage→verify 플로우를 깨는 DX 회귀라 기각(설계 리뷰 합의). 잔여 구멍(로그·후속 후보): staged-stray, 커밋된 stray(근본 해결은 codegen clean-regeneration), diff·ls-files 절의 경로 목록 2회 중복. 커밋: 이 로그 포함 단일 커밋, git log로 확인.
+- T2: drift:check에 `git ls-files --others --exclude-standard` fail-closed 체인 추가 — untracked·HEAD 삭제 사고 상태 검출(T1 사고 경로 재현으로 실증). staged 포함 porcelain 전체 검사는 정상 stage→verify 플로우를 깨는 DX 회귀라 기각(설계 리뷰 합의). 잔여 구멍(로그·후속 후보): staged-stray, 커밋된 stray(근본 해결은 codegen clean-regeneration), diff·ls-files 절의 경로 목록 2회 중복. 커밋 `c7f4cff`.
+- T3: `.github/workflows/verify.yml` 신설 — mise-action(SHA 핀, mise 2026.7.11 핀, `env: true`로 JAVA_HOME→corretto-25)·setup-gradle(SHA 핀) 후 `pnpm install --frozen-lockfile && pnpm verify`만 실행(CI 전용 로직 0). push 전 브랜치+PR 트리거(직push 워크플로우 대응), main은 cancel 제외. 검증: actionlint 1.7.12 통과, 로컬 CI 동일 시퀀스 통과. 한계·후속: 원격 첫 실행은 push 전이라 미검증 / required status check·브랜치 보호는 리포 설정 영역 / T4는 base ref fetch 추가 필요(fetch-depth 1 부족) / .mise.toml fuzzy 버전(`"9"` 등) 정밀 핀은 별도 root-infra 판단.
