@@ -22,7 +22,7 @@ cd polyglot-board
 docker compose up --build
 ```
 
-postgres(스키마는 Flyway가 생성) → backend → seed(예시 글) → frontend 순으로 healthcheck 게이트를 거쳐 기동한다.
+postgres → migration(app-migration이 스키마 생성 후 종료) → backend → seed(예시 글) → frontend 순으로 게이트(완주·healthcheck)를 거쳐 기동한다.
 
 | 서비스 | URL |
 | --- | --- |

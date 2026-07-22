@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       name: 'no-orphans',
-      severity: 'warn',
+      severity: 'error',
       comment: '고아 모듈(어디서도 import 안 됨). 진입 파일·설정 파일은 예외.',
       from: {
         orphan: true,
@@ -46,8 +46,8 @@ module.exports = {
           '(^|/)index\\.(server|client)\\.ts$',
           '\\.d\\.ts$',
           '(^|/)next-env\\.d\\.ts$',
-          // Next 라우트 규약 파일은 라우터가 관례로 로드하므로 고아가 정상이다.
-          '(^|/)(page|layout|loading|error|not-found|global-error|template|default|route)\\.(ts|tsx)$',
+          // Next 라우트·앱 규약 파일은 프레임워크가 관례로 로드하므로 고아가 정상이다.
+          '(^|/)(page|layout|loading|error|not-found|global-error|template|default|route|instrumentation)\\.(ts|tsx)$',
           // 패키지 public API(package.json exports 대상)는 소비자가 아직 없어도 정상이다.
           '^packages/[^/]+/src/index\\.ts$',
           '^packages/config/src/server\\.ts$',

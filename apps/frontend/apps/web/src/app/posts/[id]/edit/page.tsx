@@ -1,16 +1,19 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ApiError, getPost, updatePostAction } from '@/features/board/index.server';
+import { ApiError, getPost, postIdSchema, updatePostAction } from '@/features/board/index.server';
 import { PostForm } from '@/features/board/index.client';
 
 export const metadata: Metadata = { title: '게시글 수정' };
 
 export default async function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+  const { id: rawId } = await params;
+  // ingress(라우트 파라미터)는 엄격 Zod 검증한다 — 형식 불량 id는 404.
+  const parsedId = postIdSchema.safeParse(rawId);
+  if (!parsedId.success) notFound();
 
   let post;
   try {
-    post = await getPost(id);
+    post = await getPost(parsedId.data);
   } catch (error) {
     if (error instanceof ApiError && error.code === 'POST_NOT_FOUND') notFound();
     throw error;

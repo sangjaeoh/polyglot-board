@@ -20,25 +20,20 @@
     "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "server-only": "^0.0.1",
     "shared-types": "workspace:*",
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.18.0",
-    "@next/eslint-plugin-next": "^16.2.10",
+    "@board/eslint-config": "workspace:*",
+    "@board/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.18.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^3.7.0",
-    "eslint-plugin-boundaries": "^7.0.2",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react-hooks": "^6.1.1",
     "prettier": "^3.9.5",
     "tailwindcss": "^4.3.2",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.20.0"
+    "typescript": "^5.7.2"
   }
 }

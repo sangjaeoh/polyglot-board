@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: board-migration
+  main:
+    # 웹 서버 없이 실행→migrate→종료한다.
+    web-application-type: none
+  datasource:
+    # 로컬 postgres 기본값(app-api와 동일). compose는 SPRING_DATASOURCE_* 환경변수로 주입한다.
+    url: jdbc:postgresql://localhost:5432/boardapi
+    username: boardapi
+    password: boardapi

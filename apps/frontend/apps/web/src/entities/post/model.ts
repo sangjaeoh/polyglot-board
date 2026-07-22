@@ -1,14 +1,16 @@
 import {
+  postIdSchema,
   postResponseSchema,
   postPageResponseSchema,
+  type PostId,
   type PostResponse,
   type PostSummary,
   type PostPageResponse,
 } from 'shared-types';
 
 // 프론트 read-model은 백엔드 진실의 투영이다. 스키마는 계약에서 생성된 것을 재노출하고, 순수 뷰 파생만 더한다.
-export { postResponseSchema, postPageResponseSchema };
-export type { PostResponse, PostSummary, PostPageResponse };
+export { postIdSchema, postResponseSchema, postPageResponseSchema };
+export type { PostId, PostResponse, PostSummary, PostPageResponse };
 
 /**
  * ISO-8601 offset 문자열을 UTC 기준 표시 문자열로 바꾼다.

@@ -41,7 +41,7 @@ SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5433/boardapi \
   ./gradlew :module-apps:app-api:bootRun
 ```
 
-스키마는 기동 시 Flyway가 생성·마이그레이션한다(`ddl-auto: validate`). 프론트엔드까지 포함한 전체 스택 실행은 [루트 README](../../README.md)의 Docker Compose 절을 따른다.
+스키마는 app-migration(Flyway 독립 실행기)이 생성·마이그레이션하고, 실행 앱은 기동 시 검증만 한다(`ddl-auto: validate`). 프론트엔드까지 포함한 전체 스택 실행은 [루트 README](../../README.md)의 Docker Compose 절을 따른다.
 
 ## 모듈 구조
 

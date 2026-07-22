@@ -12,14 +12,11 @@ dependencies {
     implementation(libs.spring.boot.starter.validation)
     implementation(libs.spring.boot.starter.actuator)
     implementation(libs.springdoc.starter)
-    implementation(libs.flyway.core)
-    runtimeOnly(libs.flyway.postgresql)
     runtimeOnly(libs.postgresql)
 
     testImplementation(libs.spring.boot.starter.test)
     testImplementation(libs.spring.boot.webmvc.test)
     testImplementation(libs.spring.boot.testcontainers)
-    testImplementation(libs.archunit.junit5)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit)
 }

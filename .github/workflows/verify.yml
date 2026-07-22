@@ -1,0 +1,42 @@
+# CI 게이트 — 로컬 명령과 CI 명령은 동일하다(apps/frontend/docs/code-quality.md).
+# 검증 로직은 루트 package.json 스크립트(pnpm verify·pnpm run oasdiff:check)가 소유하고, 여기는 실행 환경만 준비한다.
+name: verify
+
+on:
+  push:
+    branches: ['**'] # 전 브랜치(직push 워크플로우에서도 게이트 발화), 태그 push 제외
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # main은 취소하지 않는다 — 연속 push 시 중간 커밋도 검증 이력을 남긴다.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # oasdiff base(merge-base·git show) 참조용 전체 히스토리
+
+      # 툴체인 정본은 .mise.toml(java corretto-25 · node 24 · pnpm 9) 하나다.
+      # env: true(기본값 명시) — mise env를 GITHUB_ENV로 내보내 JAVA_HOME이
+      # corretto-25를 가리키게 한다(백엔드 toolchain은 foojay 미사용, JAVA_HOME 의존).
+      - uses: jdx/mise-action@dad1bfd3df957f44999b559dd69dc1671cb4e9ea # v4.2.1
+        with:
+          version: 2026.7.11
+          env: true
+
+      # 계약 파괴적 변경 게이트 — 로컬과 동일 명령(스크립트 소유: scripts/oasdiff-check.sh).
+      - run: pnpm run oasdiff:check
+
+      # 환경 프로비저닝(gradle 배포판·의존성 캐시) — 검증 명령이 아니므로 로컬=CI 동일성 무관.
+      - uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm verify
