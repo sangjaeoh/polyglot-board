@@ -1,6 +1,6 @@
 package com.board.api.web.v1.post;
 
-import com.board.board.info.PostInfo;
+import com.board.board.application.info.PostInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.Instant;
 import java.util.UUID;

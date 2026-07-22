@@ -1,10 +1,10 @@
 package com.board.api.facade;
 
-import com.board.board.info.PostInfo;
-import com.board.board.service.PostAppender;
-import com.board.board.service.PostModifier;
-import com.board.board.service.PostReader;
-import com.board.board.service.PostRemover;
+import com.board.board.application.info.PostInfo;
+import com.board.board.application.provided.PostAppender;
+import com.board.board.application.provided.PostModifier;
+import com.board.board.application.provided.PostReader;
+import com.board.board.application.provided.PostRemover;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,13 +41,13 @@ public class BoardFacade {
         return postReader.getPost(id);
     }
 
-    /** 게시글을 작성하고 생성 결과를 반환한다. */
-    public PostInfo create(String title, String content, String author) {
+    /** 게시글을 작성하고 생성된 ID를 반환한다(명령은 최소 결과). */
+    public UUID create(String title, String content, String author) {
         return postAppender.register(title, content, author);
     }
 
     /** 게시글을 수정한다. */
-    public void update(UUID id, String title, String content) {
+    public void edit(UUID id, String title, String content) {
         postModifier.edit(id, title, content);
     }
 

@@ -1,5 +1,9 @@
 package com.board.architecture;
 
+import static com.tngtech.archunit.base.DescribedPredicate.not;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
+import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
@@ -11,6 +15,7 @@ import com.board.common.jpa.entity.BaseTimeEntity;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaConstructor;
 import com.tngtech.archunit.core.domain.JavaField;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
@@ -18,6 +23,7 @@ import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaParameterizedType;
 import com.tngtech.archunit.core.domain.JavaType;
+import com.tngtech.archunit.core.domain.properties.CanBeAnnotated;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -29,7 +35,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.persistence.Embeddable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -59,16 +67,20 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>검증 대상 패키지는 하드코딩하지 않고 클래스패스에서 파생한다 — 클래스패스는 build.gradle.kts가 settings의
  * 모듈 목록에서 구성하므로 새 모듈은 자동 편입된다. 앱 루트는 {@code @SpringBootApplication} 소재 패키지,
- * 도메인 루트는 도메인 마커 서브패키지(entity·info·repository·service·port·event·exception)를 가진
- * {@code com.board} 직하 패키지다.
+ * 도메인 루트는 구역 마커 서브패키지(application·adapter·domain)를 가진 {@code com.board} 직하 패키지다.
  */
 @AnalyzeClasses(packages = "com.board", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureTest {
 
     private static final Set<String> BASE_FINDER_NAMES = Set.of("findById", "findAll", "count");
 
-    private static final Set<String> DOMAIN_MARKERS =
-            Set.of("entity", "info", "repository", "service", "port", "event", "exception");
+    private static final Set<String> DOMAIN_MARKERS = Set.of("application", "adapter", "domain");
+
+    /** JPA 매핑 클래스 판정 — 엔티티 비노출·시그니처 규칙이 패키지가 아니라 매핑 애노테이션으로 판정한다. */
+    private static final DescribedPredicate<CanBeAnnotated> JPA_MAPPED = annotatedWith(Entity.class)
+            .or(annotatedWith(MappedSuperclass.class))
+            .or(annotatedWith(Embeddable.class))
+            .as("JPA 매핑 클래스(@Entity·@MappedSuperclass·@Embeddable)");
 
     /**
      * base finder 금지의 예외("deletedAt 없는 엔티티는 그대로 사용")를 구현한다 — 소프트삭제 엔티티의
@@ -139,17 +151,60 @@ class ArchitectureTest {
             }
         }
         if (roots.isEmpty()) {
-            throw new AssertionError("도메인 루트 파생 실패 — 도메인 마커 서브패키지를 가진 패키지가 없다");
+            throw new AssertionError("도메인 루트 파생 실패 — 구역 마커 서브패키지를 가진 패키지가 없다");
         }
         return roots;
+    }
+
+    /**
+     * JPA 매핑 클래스의 소유 모듈 베이스를 파생한다 — 도메인 모듈은 {@code domain} 구역, common 모듈은
+     * 모듈 베이스. 그 밖의 매핑 클래스는 배치 위반이므로 파생 자체를 실패시킨다(타입 위치 강제, fail-closed).
+     */
+    private static SortedSet<String> mappedClassOwningBases(JavaClasses allClasses) {
+        SortedSet<String> bases = new TreeSet<>();
+        for (JavaClass clazz : allClasses) {
+            if (!JPA_MAPPED.test(clazz)) {
+                continue;
+            }
+            String[] segments = clazz.getPackageName().split("\\.");
+            if (segments.length >= 4 && segments[0].equals("com") && segments[1].equals("board")) {
+                if (segments[2].equals("common")) {
+                    bases.add("com.board.common." + segments[3]);
+                    continue;
+                }
+                if (segments[3].equals("domain")) {
+                    bases.add("com.board." + segments[2]);
+                    continue;
+                }
+            }
+            throw new AssertionError("JPA 매핑 클래스가 도메인 모듈 domain 구역·common 모듈 밖에 있다: " + clazz.getName());
+        }
+        if (bases.isEmpty()) {
+            throw new AssertionError("매핑 클래스 소유 모듈 파생 실패 — JPA 매핑 클래스가 클래스패스에 없다");
+        }
+        return bases;
     }
 
     private static String[] withSuffix(SortedSet<String> roots, String suffix) {
         return roots.stream().map(root -> root + suffix).toArray(String[]::new);
     }
 
+    private static String[] concat(String[] first, String[] second) {
+        String[] merged = new String[first.length + second.length];
+        System.arraycopy(first, 0, merged, 0, first.length);
+        System.arraycopy(second, 0, merged, first.length, second.length);
+        return merged;
+    }
+
     private static boolean underAny(String packageName, SortedSet<String> roots) {
         return roots.stream().anyMatch(root -> packageName.equals(root) || packageName.startsWith(root + "."));
+    }
+
+    /** 패키지가 도메인 루트의 특정 구역({@code root + zoneSuffix}) 이하인지 판정한다. */
+    private static boolean inZone(String packageName, SortedSet<String> roots, String zoneSuffix) {
+        return roots.stream()
+                .anyMatch(root ->
+                        packageName.equals(root + zoneSuffix) || packageName.startsWith(root + zoneSuffix + "."));
     }
 
     /** 파생 무결성: 모든 클래스가 앱·도메인·common 루트 중 하나로 분류돼야 한다(파생 실패 fail-closed). */
@@ -169,27 +224,170 @@ class ArchitectureTest {
         }
     }
 
-    /** 앱은 리포지토리에 직접 접근하지 않는다(도메인 서비스·파사드 경유). */
+    /** 앱은 required 계약(리포지토리 포함)에 직접 접근하지 않는다(provided 경유). */
     @ArchTest
-    static void apps_do_not_access_repositories(JavaClasses allClasses) {
+    static void apps_do_not_access_required_contracts(JavaClasses allClasses) {
         noClasses()
                 .that()
                 .resideInAnyPackage(withSuffix(appRoots(allClasses), ".."))
                 .should()
                 .dependOnClassesThat()
-                .resideInAnyPackage(withSuffix(domainRoots(allClasses), ".repository.."))
+                .resideInAnyPackage(withSuffix(domainRoots(allClasses), ".application.required.."))
                 .check(allClasses);
     }
 
-    /** 엔티티는 도메인 모듈 밖(앱)에 노출되지 않는다. 경계는 Info로 넘는다. */
+    /**
+     * JPA 매핑 클래스는 소유 모듈 밖에 노출되지 않는다. 경계는 provided·info·{@code domain}의 비-JPA 타입으로
+     * 넘는다. 크로스 모듈 컴파일 의존은 컨벤션 플러그인이 차단하므로 소유 모듈 내부 위치가 정당 접근의 증거다.
+     * query 모듈 가시 예외는 실물이 생길 때 등록한다.
+     */
     @ArchTest
-    static void entities_do_not_leak_to_apps(JavaClasses allClasses) {
+    static void jpa_mapped_classes_do_not_leak_outside_owning_modules(JavaClasses allClasses) {
+        SortedSet<String> owningBases = mappedClassOwningBases(allClasses);
+        DescribedPredicate<JavaClass> outsideOwningModules = new DescribedPredicate<>("매핑 클래스 소유 모듈 밖") {
+            @Override
+            public boolean test(JavaClass clazz) {
+                return !underAny(clazz.getPackageName(), owningBases);
+            }
+        };
+        noClasses()
+                .that(outsideOwningModules)
+                .should()
+                .dependOnClassesThat(JPA_MAPPED)
+                .check(allClasses);
+    }
+
+    /** 구역 의존 방향: domain 구역은 application·adapter 구역을 의존하지 않는다. */
+    @ArchTest
+    static void domain_zone_does_not_depend_on_other_zones(JavaClasses allClasses) {
+        SortedSet<String> domains = domainRoots(allClasses);
         noClasses()
                 .that()
-                .resideInAnyPackage(withSuffix(appRoots(allClasses), ".."))
+                .resideInAnyPackage(withSuffix(domains, ".domain.."))
                 .should()
                 .dependOnClassesThat()
-                .resideInAnyPackage(withSuffix(domainRoots(allClasses), ".entity.."))
+                .resideInAnyPackage(concat(withSuffix(domains, ".application.."), withSuffix(domains, ".adapter..")))
+                .check(allClasses);
+    }
+
+    /** 구역 의존 방향: application 구역은 adapter 구역을 의존하지 않는다. */
+    @ArchTest
+    static void application_zone_does_not_depend_on_adapter_zone(JavaClasses allClasses) {
+        SortedSet<String> domains = domainRoots(allClasses);
+        noClasses()
+                .that()
+                .resideInAnyPackage(withSuffix(domains, ".application.."))
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(withSuffix(domains, ".adapter.."))
+                .check(allClasses);
+    }
+
+    /** adapter 구역은 모듈 밖에 노출되지 않는다(required 계약의 구현은 모듈 내부 소유). */
+    @ArchTest
+    static void adapter_zone_is_module_private(JavaClasses allClasses) {
+        for (String root : domainRoots(allClasses)) {
+            noClasses()
+                    .that()
+                    .resideOutsideOfPackage(root + "..")
+                    .should()
+                    .dependOnClassesThat()
+                    .resideInAPackage(root + ".adapter..")
+                    .check(allClasses);
+        }
+    }
+
+    /** 모듈 밖의 application 의존은 provided·info만 허용한다(required·구현 서비스는 모듈 내부 소유). */
+    @ArchTest
+    static void application_zone_is_consumed_via_provided_and_info_only(JavaClasses allClasses) {
+        for (String root : domainRoots(allClasses)) {
+            DescribedPredicate<JavaClass> internalApplication = resideInAPackage(root + ".application..")
+                    .and(not(resideInAnyPackage(root + ".application.provided..", root + ".application.info..")))
+                    .as("provided·info 밖 application 구역(" + root + ")");
+            noClasses()
+                    .that()
+                    .resideOutsideOfPackage(root + "..")
+                    .should()
+                    .dependOnClassesThat(internalApplication)
+                    .check(allClasses);
+        }
+    }
+
+    /**
+     * provided·info 시그니처(메서드·생성자 파라미터, 반환, 필드 — 제네릭 실인자 포함)에 JPA 매핑 타입을 쓰지
+     * 않는다. 예외: info의 정적 {@code from} 변환 팩토리 — 경계 조회 모델의 {@code from(entity)} 정적 팩토리는
+     * coding-conventions가 소유하는 규정 패턴이고, 모듈 밖은 엔티티를 임포트할 수 없어 호출할 수 없다.
+     */
+    @ArchTest
+    static void provided_and_info_signatures_do_not_expose_jpa_mapped_types(JavaClasses allClasses) {
+        SortedSet<String> domains = domainRoots(allClasses);
+        List<String> problems = new ArrayList<>();
+        for (JavaClass clazz : allClasses) {
+            String packageName = clazz.getPackageName();
+            boolean inProvided = inZone(packageName, domains, ".application.provided");
+            boolean inInfo = inZone(packageName, domains, ".application.info");
+            if (!inProvided && !inInfo) {
+                continue;
+            }
+            for (JavaMethod method : clazz.getMethods()) {
+                if (inInfo
+                        && method.getModifiers().contains(JavaModifier.STATIC)
+                        && method.getName().equals("from")) {
+                    continue;
+                }
+                for (JavaType parameterType : method.getParameterTypes()) {
+                    collectJpaMappedTypes(parameterType, method.getFullName(), problems);
+                }
+                collectJpaMappedTypes(method.getReturnType(), method.getFullName(), problems);
+            }
+            for (JavaConstructor constructor : clazz.getConstructors()) {
+                for (JavaType parameterType : constructor.getParameterTypes()) {
+                    collectJpaMappedTypes(parameterType, constructor.getFullName(), problems);
+                }
+            }
+            for (JavaField field : clazz.getFields()) {
+                if (field.getModifiers().contains(JavaModifier.STATIC)) {
+                    continue;
+                }
+                collectJpaMappedTypes(field.getType(), field.getFullName(), problems);
+            }
+        }
+        if (!problems.isEmpty()) {
+            throw new AssertionError("provided·info 시그니처의 JPA 매핑 타입 노출:\n" + String.join("\n", problems));
+        }
+    }
+
+    /** 시그니처 타입에서 JPA 매핑 클래스를 제네릭 실인자까지 재귀 수집한다. */
+    private static void collectJpaMappedTypes(JavaType type, String location, List<String> problems) {
+        JavaClass erasure = type.toErasure();
+        if (JPA_MAPPED.test(erasure)) {
+            problems.add(location + ": " + erasure.getName());
+        }
+        if (type instanceof JavaParameterizedType parameterized) {
+            for (JavaType argument : parameterized.getActualTypeArguments()) {
+                collectJpaMappedTypes(argument, location, problems);
+            }
+        }
+    }
+
+    /** provided 구현 서비스는 package-private다. 모듈 밖은 provided 인터페이스만 본다. */
+    @ArchTest
+    static void provided_implementations_are_package_private(JavaClasses allClasses) {
+        SortedSet<String> domains = domainRoots(allClasses);
+        DescribedPredicate<JavaClass> implementsProvidedContract = new DescribedPredicate<>("provided 계약을 구현") {
+            @Override
+            public boolean test(JavaClass clazz) {
+                return !clazz.isInterface()
+                        && clazz.getAllRawInterfaces().stream()
+                                .anyMatch(contract ->
+                                        inZone(contract.getPackageName(), domains, ".application.provided"));
+            }
+        };
+        classes()
+                .that(implementsProvidedContract)
+                .should()
+                .notBePublic()
+                .because("provided 구현 서비스는 package-private로 선언한다 — 모듈 밖은 provided 인터페이스만 본다")
                 .check(allClasses);
     }
 
