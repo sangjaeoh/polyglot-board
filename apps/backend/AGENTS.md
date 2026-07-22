@@ -8,6 +8,11 @@
 - [`docs/testing.md`](docs/testing.md) — 시나리오 소유, 작업 절차, 테스트 레벨, 행동 명세, 시나리오 충분성, 목 정책, 테스트 도구
 - [`docs/code-quality.md`](docs/code-quality.md) — Spotless, NullAway, Error Prone 게이트와 버전
 
+요구사항·도메인 모델은 backend 루트의 두 문서가 소유한다.
+
+- [`REQUIREMENTS.md`](REQUIREMENTS.md) — 무엇을 만드는가. 범위, 용어(도메인 용어집), 기능·비기능 요구사항, 제약·전제
+- [`DOMAIN_MODEL.md`](DOMAIN_MODEL.md) — 실제로 무엇을 만드는가. 엔티티 필드, 정책, 불변식, 오퍼레이션
+
 
 ## 작업 원칙
 
