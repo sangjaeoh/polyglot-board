@@ -1,6 +1,6 @@
 // 토큰 우회 차단 규칙(design-system.md 토큰: 원시값은 토큰 정의 스타일시트에만 산다).
-// 프론트 서브트리 공유 규칙 — tsconfig.base.json·.dependency-cruiser.cjs와 같은 층에 두고
-// 각 워크스페이스의 인라인 flat config가 소비한다(code-quality.md 강제 기계 배치).
+// ESLint 강제 기계의 중앙 패키지(@board/eslint-config)가 소유하고, 각 워크스페이스는
+// 이 패키지의 config로 상속해 소비한다(code-quality.md 게이트 소유).
 //
 // 막는 것: Tailwind 임의 값 구문의 색(hex·색 함수)·치수(px), 비토큰 팔레트 색 유틸.
 // 막지 않는 것: 색·px가 아닌 임의 값(transition-[prop,...]·supports-[feature]·aspect-[16/9] 등).

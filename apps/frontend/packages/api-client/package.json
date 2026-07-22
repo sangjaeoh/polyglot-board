@@ -16,6 +16,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@board/tsconfig": "workspace:*",
     "@types/node": "^24.0.0",
     "typescript": "^5.7.2"
   }

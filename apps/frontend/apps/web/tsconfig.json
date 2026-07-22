@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@board/tsconfig/base.json",
   "compilerOptions": {
     "jsx": "preserve",
     "incremental": true,

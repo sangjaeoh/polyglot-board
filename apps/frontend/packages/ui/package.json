@@ -22,6 +22,8 @@
     "react": "^19.2.0"
   },
   "devDependencies": {
+    "@board/eslint-config": "workspace:*",
+    "@board/tsconfig": "workspace:*",
     "@storybook/addon-a11y": "10.5.0",
     "@storybook/react-vite": "10.5.0",
     "@storybook/test-runner": "0.24.4",
@@ -35,7 +37,6 @@
     "storybook": "10.5.0",
     "storybook-addon-pseudo-states": "10.5.0",
     "typescript": "^5.7.2",
-    "typescript-eslint": "^8.20.0",
     "vite": "8.1.4"
   }
 }
