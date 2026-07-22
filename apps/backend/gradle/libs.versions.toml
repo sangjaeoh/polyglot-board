@@ -20,6 +20,7 @@ spring-boot-starter-validation = { module = "org.springframework.boot:spring-boo
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 springdoc-starter = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+springdoc-common = { module = "org.springdoc:springdoc-openapi-starter-common", version.ref = "springdoc" }
 flyway-core = { module = "org.flywaydb:flyway-core" }
 spring-boot-flyway = { module = "org.springframework.boot:spring-boot-flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }

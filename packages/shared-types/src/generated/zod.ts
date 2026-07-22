@@ -7,6 +7,9 @@
  */
 import * as zod from "zod";
 
+/**
+ * @summary 활성 게시글을 최신순으로 페이지 조회한다
+ */
 export const listPostsQueryPageDefault = 0;
 export const listPostsQueryPageMin = 0;
 
@@ -14,76 +17,107 @@ export const listPostsQuerySizeDefault = 20;
 export const listPostsQuerySizeMax = 100;
 
 export const listPostsQueryParams = zod.object({
-  page: zod.number().min(listPostsQueryPageMin).optional(),
+  page: zod
+    .number()
+    .min(listPostsQueryPageMin)
+    .optional()
+    .describe("0-based 페이지 번호"),
   size: zod
     .number()
     .min(1)
     .max(listPostsQuerySizeMax)
-    .default(listPostsQuerySizeDefault),
+    .default(listPostsQuerySizeDefault)
+    .describe("페이지 크기(1-100)"),
 });
 
-export const listPostsResponse = zod.object({
-  content: zod.array(
-    zod.object({
-      author: zod.string(),
-      createdAt: zod.string().datetime({}),
-      id: zod.string().uuid(),
-      title: zod.string(),
-    }),
-  ),
-  page: zod.number(),
-  size: zod.number(),
-  totalElements: zod.number(),
-  totalPages: zod.number(),
-});
+export const listPostsResponse = zod
+  .object({
+    content: zod
+      .array(
+        zod
+          .object({
+            author: zod.string().describe("작성자"),
+            createdAt: zod.string().datetime({}).describe("작성 시각"),
+            id: zod.string().uuid().describe("게시글 ID"),
+            title: zod.string().describe("제목"),
+          })
+          .describe("게시글 목록 항목 응답"),
+      )
+      .describe("페이지 항목 목록"),
+    page: zod.number().describe("0-based 페이지 번호"),
+    size: zod.number().describe("페이지 크기"),
+    totalElements: zod.number().describe("전체 항목 수"),
+    totalPages: zod.number().describe("전체 페이지 수"),
+  })
+  .describe("오프셋 페이지네이션 응답");
 
+/**
+ * @summary 게시글을 작성한다
+ */
 export const createPostBodyAuthorMax = 20;
 
 export const createPostBodyContentMax = 10000;
 
 export const createPostBodyTitleMax = 200;
 
-export const createPostBody = zod.object({
-  author: zod.string().min(1).max(createPostBodyAuthorMax),
-  content: zod.string().min(1).max(createPostBodyContentMax),
-  title: zod.string().min(1).max(createPostBodyTitleMax),
-});
+export const createPostBody = zod
+  .object({
+    author: zod.string().min(1).max(createPostBodyAuthorMax).describe("작성자"),
+    content: zod.string().min(1).max(createPostBodyContentMax).describe("본문"),
+    title: zod.string().min(1).max(createPostBodyTitleMax).describe("제목"),
+  })
+  .describe("게시글 작성 요청");
 
+/**
+ * @summary 게시글을 소프트삭제한다
+ */
 export const deletePostParams = zod.object({
-  id: zod.string().uuid(),
+  id: zod.string().uuid().describe("게시글 ID"),
 });
 
+/**
+ * @summary 게시글 상세를 조회한다
+ */
 export const getPostParams = zod.object({
-  id: zod.string().uuid(),
+  id: zod.string().uuid().describe("게시글 ID"),
 });
 
-export const getPostResponse = zod.object({
-  author: zod.string(),
-  content: zod.string(),
-  createdAt: zod.string().datetime({}),
-  id: zod.string().uuid(),
-  title: zod.string(),
-  updatedAt: zod.string().datetime({}),
-});
+export const getPostResponse = zod
+  .object({
+    author: zod.string().describe("작성자"),
+    content: zod.string().describe("본문"),
+    createdAt: zod.string().datetime({}).describe("작성 시각"),
+    id: zod.string().uuid().describe("게시글 ID"),
+    title: zod.string().describe("제목"),
+    updatedAt: zod.string().datetime({}).describe("수정 시각"),
+  })
+  .describe("게시글 상세 응답");
 
+/**
+ * @summary 게시글을 수정한다
+ */
 export const updatePostParams = zod.object({
-  id: zod.string().uuid(),
+  id: zod.string().uuid().describe("게시글 ID"),
 });
 
 export const updatePostBodyContentMax = 10000;
 
 export const updatePostBodyTitleMax = 200;
 
-export const updatePostBody = zod.object({
-  content: zod.string().min(1).max(updatePostBodyContentMax),
-  title: zod.string().min(1).max(updatePostBodyTitleMax),
-});
+export const updatePostBody = zod
+  .object({
+    content: zod.string().min(1).max(updatePostBodyContentMax).describe("본문"),
+    title: zod.string().min(1).max(updatePostBodyTitleMax).describe("제목"),
+  })
+  .describe("게시글 수정 요청");
 
-export const updatePostResponse = zod.object({
-  author: zod.string(),
-  content: zod.string(),
-  createdAt: zod.string().datetime({}),
-  id: zod.string().uuid(),
-  title: zod.string(),
-  updatedAt: zod.string().datetime({}),
-});
+export const updatePostResponse = zod
+  .object({
+    author: zod.string().describe("작성자"),
+    content: zod.string().describe("본문"),
+    createdAt: zod.string().datetime({}).describe("작성 시각"),
+    id: zod.string().uuid().describe("게시글 ID"),
+    title: zod.string().describe("제목"),
+    updatedAt: zod.string().datetime({}).describe("수정 시각"),
+  })
+  .describe("게시글 상세 응답");

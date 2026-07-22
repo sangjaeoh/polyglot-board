@@ -1,0 +1,2 @@
+com.board.api.web.v1.post.BoardController.listPosts(int, int) 파라미터 0가 int @RequestParam을 직접 선언한다
+com.board.api.web.v1.post.BoardController.listPosts(int, int) 파라미터 1가 int @RequestParam을 직접 선언한다

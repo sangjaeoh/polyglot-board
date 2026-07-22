@@ -1,0 +1,3 @@
+#
+#Wed Jul 22 16:15:56 KST 2026
+methods\ that\ are\ declared\ in\ classes\ that\ are\ annotated\ with\ @RestController\ should\ not\ declare\ int/Integer\ @RequestParam\ directly,\ because\ int\ \uD398\uC774\uC9D5\ \uD30C\uB77C\uBBF8\uD130\uB294\ PaginationRequest\uB85C\ \uB300\uCCB4\uD55C\uB2E4\ \u2014\ \uACC4\uC57D\uACFC\ \uAC80\uC99D\uC744\ \uD55C\ \uACF3(common-web)\uC774\ \uC18C\uC720\uD55C\uB2E4=7fd68b51-98e4-4898-9ac2-c4d03630fb14

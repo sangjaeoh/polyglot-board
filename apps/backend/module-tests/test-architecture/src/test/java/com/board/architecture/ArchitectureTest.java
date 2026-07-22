@@ -1,6 +1,7 @@
 package com.board.architecture;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noMethods;
 
@@ -10,13 +11,30 @@ import com.board.common.jpa.entity.BaseTimeEntity;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaField;
+import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
+import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.domain.JavaParameterizedType;
+import com.tngtech.archunit.core.domain.JavaType;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
+import com.tngtech.archunit.library.freeze.FreezingArchRule;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.persistence.Entity;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -25,6 +43,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 모듈 경계·네이밍 불변식을 빌드가 강제한다(리뷰가 아니라).
@@ -239,4 +267,131 @@ class ArchitectureTest {
     @ArchTest
     static final ArchRule entities_extend_base_time_entity =
             classes().that().areAnnotatedWith(Entity.class).should().beAssignableTo(BaseTimeEntity.class);
+
+    private static final List<Class<? extends Annotation>> MAPPING_ANNOTATIONS = List.of(
+            GetMapping.class,
+            PostMapping.class,
+            PutMapping.class,
+            DeleteMapping.class,
+            PatchMapping.class,
+            RequestMapping.class);
+
+    /**
+     * web 핸들러와 request/response는 {@code @Operation}·{@code @ApiResponse}·{@code @Parameter(description)}·
+     * {@code @Schema}로 명시한다. 검사 대상 DTO는 패키지가 아니라 핸들러 시그니처(@RequestBody·반환 타입, 제네릭
+     * 언랩)에서 파생한다 — 응답 봉투가 다른 패키지로 이동해도 강제가 유지된다. 에러 상태 집합의 정확성은 리뷰가
+     * 소유하고(에러 응답은 OpenApiConfig OperationCustomizer 소유), 여기서는 존재만 강제한다.
+     */
+    @ArchTest
+    static void web_api_surface_is_documented(JavaClasses allClasses) {
+        List<String> problems = new ArrayList<>();
+        SortedSet<JavaClass> dtoTypes = new TreeSet<>(Comparator.comparing(JavaClass::getFullName));
+        for (JavaClass candidate : allClasses) {
+            if (!candidate.isAnnotatedWith(RestController.class)) {
+                continue;
+            }
+            for (JavaMethod method : candidate.getMethods()) {
+                if (MAPPING_ANNOTATIONS.stream().noneMatch(method::isAnnotatedWith)) {
+                    continue;
+                }
+                if (!method.isAnnotatedWith(Operation.class)) {
+                    problems.add(method.getFullName() + ": @Operation 부재");
+                }
+                if (!declaresApiResponse(method)) {
+                    problems.add(method.getFullName() + ": @ApiResponse 부재");
+                }
+                for (JavaParameter parameter : method.getParameters()) {
+                    if (parameter.isAnnotatedWith(RequestParam.class)
+                            || parameter.isAnnotatedWith(PathVariable.class)) {
+                        boolean documented = parameter
+                                .tryGetAnnotationOfType(io.swagger.v3.oas.annotations.Parameter.class)
+                                .map(doc -> !doc.description().isBlank())
+                                .orElse(false);
+                        if (!documented) {
+                            problems.add(method.getFullName() + " 파라미터 " + parameter.getIndex()
+                                    + ": @Parameter(description) 부재");
+                        }
+                    }
+                    if (parameter.isAnnotatedWith(RequestBody.class)) {
+                        collectBoardTypes(parameter.getType(), dtoTypes);
+                    }
+                }
+                collectBoardTypes(method.getReturnType(), dtoTypes);
+            }
+        }
+        for (JavaClass dto : dtoTypes) {
+            if (!dto.isAnnotatedWith(Schema.class)) {
+                problems.add(dto.getName() + ": 타입 @Schema 부재");
+            }
+            for (JavaField field : dto.getFields()) {
+                if (field.getModifiers().contains(JavaModifier.STATIC)) {
+                    continue;
+                }
+                if (!field.isAnnotatedWith(Schema.class)) {
+                    problems.add(field.getFullName() + ": 컴포넌트 @Schema 부재");
+                }
+            }
+        }
+        if (!problems.isEmpty()) {
+            throw new AssertionError("web 계약 표면 문서화 위반:\n" + String.join("\n", problems));
+        }
+    }
+
+    private static boolean declaresApiResponse(JavaMethod method) {
+        if (method.isAnnotatedWith(ApiResponse.class) || method.isAnnotatedWith(ApiResponses.class)) {
+            return true;
+        }
+        return method.tryGetAnnotationOfType(Operation.class)
+                .map(operation -> operation.responses().length > 0)
+                .orElse(false);
+    }
+
+    /** 핸들러 시그니처의 com.board 타입을 제네릭 실인자까지 재귀 수집한다(request/response DTO 파생). */
+    private static void collectBoardTypes(JavaType type, SortedSet<JavaClass> into) {
+        JavaClass erasure = type.toErasure();
+        if (erasure.getPackageName().startsWith("com.board")) {
+            into.add(erasure);
+        }
+        if (type instanceof JavaParameterizedType parameterized) {
+            for (JavaType argument : parameterized.getActualTypeArguments()) {
+                collectBoardTypes(argument, into);
+            }
+        }
+    }
+
+    /**
+     * web 컨트롤러 핸들러는 int·Integer {@code @RequestParam}을 직접 선언하지 않는다 — 페이징 GET은 common-web
+     * {@code PaginationRequest}({@code @Valid @ParameterObject})를 사용한다. 규칙은 무예외 전면 금지이며, 현행
+     * 위반(listPosts의 page·size)은 FreezingArchRule 스토어에 동결돼 있고 T8의 PaginationRequest 적용으로
+     * 자기청산된다.
+     */
+    @ArchTest
+    static final ArchRule web_handlers_do_not_declare_int_request_params = FreezingArchRule.freeze(methods()
+            .that()
+            .areDeclaredInClassesThat()
+            .areAnnotatedWith(RestController.class)
+            .should(notDeclareIntRequestParams())
+            .because("int 페이징 파라미터는 PaginationRequest로 대체한다 — 계약과 검증을 한 곳(common-web)이 소유한다"));
+
+    private static ArchCondition<JavaMethod> notDeclareIntRequestParams() {
+        return new ArchCondition<>("not declare int/Integer @RequestParam directly") {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                List<JavaParameter> parameters = method.getParameters();
+                for (int index = 0; index < parameters.size(); index++) {
+                    JavaParameter parameter = parameters.get(index);
+                    if (!parameter.isAnnotatedWith(RequestParam.class)) {
+                        continue;
+                    }
+                    JavaClass raw = parameter.getRawType();
+                    if (raw.isEquivalentTo(int.class) || raw.isEquivalentTo(Integer.class)) {
+                        events.add(SimpleConditionEvent.violated(
+                                method,
+                                method.getFullName() + " 파라미터 " + index + "가 " + raw.getSimpleName()
+                                        + " @RequestParam을 직접 선언한다"));
+                    }
+                }
+            }
+        };
+    }
 }
