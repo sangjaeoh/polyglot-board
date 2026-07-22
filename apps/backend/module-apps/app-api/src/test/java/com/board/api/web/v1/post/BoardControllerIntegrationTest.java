@@ -53,7 +53,8 @@ class BoardControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].id").value(id))
                 .andExpect(jsonPath("$.page").value(1))
-                .andExpect(jsonPath("$.totalElements").value(1));
+                // int64는 계약상 string 표현이다(JSON number 정밀도 제한 대응 — docs/sharing.md).
+                .andExpect(jsonPath("$.totalElements").value("1"));
 
         // 1-based 명시 요청: page=1이 첫 페이지다(0-based 시절의 page=0과 동일 내용).
         mockMvc.perform(get("/api/v1/posts").param("page", "1"))

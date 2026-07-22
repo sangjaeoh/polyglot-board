@@ -2,12 +2,15 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { buttonClass } from '@board/ui';
-import { ApiError, getPost, type PostResponse } from '@/features/board/index.server';
+import { ApiError, getPost, postIdSchema, type PostResponse } from '@/features/board/index.server';
 import { DeletePostButton, PostTime } from '@/features/board/index.client';
 
-async function loadPost(id: string): Promise<PostResponse> {
+// ingress(라우트 파라미터)는 엄격 Zod 검증한다 — 형식 불량 id는 어떤 리소스도 지칭하지 못하므로 404.
+async function loadPost(rawId: string): Promise<PostResponse> {
+  const id = postIdSchema.safeParse(rawId);
+  if (!id.success) notFound();
   try {
-    return await getPost(id);
+    return await getPost(id.data);
   } catch (error) {
     if (error instanceof ApiError && error.code === 'POST_NOT_FOUND') notFound();
     throw error;
@@ -21,7 +24,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   try {
-    const post = await getPost(id);
+    const post = await loadPost(id);
     return { title: post.title };
   } catch {
     return { title: '게시글' };

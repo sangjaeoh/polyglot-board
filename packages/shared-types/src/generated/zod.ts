@@ -45,7 +45,11 @@ export const listPostsResponse = zod
       .describe("페이지 항목 목록"),
     page: zod.number().describe("1-based 페이지 번호"),
     pageSize: zod.number().describe("페이지 크기"),
-    totalElements: zod.number().describe("전체 항목 수"),
+    totalElements: zod
+      .string()
+      .describe(
+        "전체 항목 수(int64 — JSON number의 2^53 정밀도 제한을 피해 string으로 표현)",
+      ),
     totalPages: zod.number().describe("전체 페이지 수"),
   })
   .describe("오프셋 페이지네이션 응답(1-based)");

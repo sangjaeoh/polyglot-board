@@ -6,11 +6,12 @@ import {
   postResponseSchema,
   problemDetailSchema,
   type PostCreateRequest,
+  type PostId,
   type PostPageResponse,
   type PostResponse,
   type PostUpdateRequest,
 } from 'shared-types';
-import { z, type ZodType } from 'zod';
+import { z, type ZodType, type ZodTypeDef } from 'zod';
 import { ApiError } from './error';
 
 // 백엔드 호출은 이 타입드 클라이언트(server-only)로만 한다. base URL·헤더는 여기 경계 안에 둔다.
@@ -39,7 +40,7 @@ async function toApiError(response: Response): Promise<ApiError> {
 
 // egress(백엔드→BFF) 검증은 이 경계 1곳에서 safeParse한다.
 // 상세(단일 리소스)는 실패 시 throw한다 — 드롭할 국소 단위가 없다(docs/data.md의 예외).
-async function readValidated<T>(response: Response, schema: ZodType<T>): Promise<T> {
+async function readValidated<T>(response: Response, schema: ZodType<T, ZodTypeDef, unknown>): Promise<T> {
   const json: unknown = await response.json();
   const parsed = schema.safeParse(json);
   if (!parsed.success) {
@@ -81,8 +82,8 @@ export async function getPosts(params: { page?: number; size?: number } = {}): P
   return readValidatedPage(response);
 }
 
-export async function getPost(id: string): Promise<PostResponse> {
-  const response = await fetch(url(`/api/v1/posts/${id}`), {
+export async function getPost(id: PostId): Promise<PostResponse> {
+  const response = await fetch(url(`/api/v1/posts/${encodeURIComponent(id)}`), {
     cache: 'no-store',
     headers: { Accept: 'application/json' },
   });
@@ -100,8 +101,8 @@ export async function createPost(body: PostCreateRequest): Promise<PostResponse>
   return readValidated(response, postResponseSchema);
 }
 
-export async function updatePost(id: string, body: PostUpdateRequest): Promise<PostResponse> {
-  const response = await fetch(url(`/api/v1/posts/${id}`), {
+export async function updatePost(id: PostId, body: PostUpdateRequest): Promise<PostResponse> {
+  const response = await fetch(url(`/api/v1/posts/${encodeURIComponent(id)}`), {
     method: 'PUT',
     headers: jsonHeaders,
     body: JSON.stringify(body),
@@ -110,8 +111,8 @@ export async function updatePost(id: string, body: PostUpdateRequest): Promise<P
   return readValidated(response, postResponseSchema);
 }
 
-export async function deletePost(id: string): Promise<void> {
-  const response = await fetch(url(`/api/v1/posts/${id}`), {
+export async function deletePost(id: PostId): Promise<void> {
+  const response = await fetch(url(`/api/v1/posts/${encodeURIComponent(id)}`), {
     method: 'DELETE',
     headers: { Accept: 'application/json' },
   });

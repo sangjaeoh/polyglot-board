@@ -3,7 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ApiError, createPost, deletePost, updatePost } from '@board/api-client';
-import { postCreateRequestSchema, postUpdateRequestSchema } from 'shared-types';
+import {
+  postCreateRequestSchema,
+  postIdSchema,
+  postUpdateRequestSchema,
+  type PostId,
+} from 'shared-types';
 import type { ZodError } from 'zod';
 
 export interface FormState {
@@ -47,7 +52,7 @@ export async function createPostAction(
   });
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
 
-  let createdId: string;
+  let createdId: PostId;
   try {
     const created = await createPost(parsed.data);
     createdId = created.id;
@@ -58,12 +63,15 @@ export async function createPostAction(
   redirect(`/posts/${createdId}`);
 }
 
-/** 게시글 수정. id는 bind로 고정한다. */
+/** 게시글 수정. id는 bind로 고정하나 공개 POST 입력이므로 본문에서 다시 엄격 검증한다(보정 없이 거부). */
 export async function updatePostAction(
   id: string,
   _prev: FormState | null,
   formData: FormData,
 ): Promise<FormState> {
+  const parsedId = postIdSchema.safeParse(id);
+  if (!parsedId.success) return { message: '잘못된 요청입니다.' };
+
   const parsed = postUpdateRequestSchema.safeParse({
     title: formData.get('title'),
     content: formData.get('content'),
@@ -71,19 +79,22 @@ export async function updatePostAction(
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
 
   try {
-    await updatePost(id, parsed.data);
+    await updatePost(parsedId.data, parsed.data);
   } catch (error) {
     return apiErrorToState(error);
   }
   revalidatePath('/');
-  revalidatePath(`/posts/${id}`);
-  redirect(`/posts/${id}`);
+  revalidatePath(`/posts/${parsedId.data}`);
+  redirect(`/posts/${parsedId.data}`);
 }
 
-/** 게시글 삭제. id는 bind로 고정한다. 이미 삭제된 게시글(404)만 성공과 같게 목록으로 진행한다. */
+/** 게시글 삭제. id는 bind로 고정하나 공개 POST 입력이므로 본문에서 다시 엄격 검증한다(보정 없이 거부). */
 export async function deletePostAction(id: string): Promise<FormState> {
+  const parsedId = postIdSchema.safeParse(id);
+  if (!parsedId.success) return { message: '잘못된 요청입니다.' };
+
   try {
-    await deletePost(id);
+    await deletePost(parsedId.data);
   } catch (error) {
     const alreadyDeleted = error instanceof ApiError && error.code === 'POST_NOT_FOUND';
     if (!alreadyDeleted) return apiErrorToState(error);

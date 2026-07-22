@@ -22,9 +22,8 @@
             "type" : "integer"
           },
           "totalElements" : {
-            "description" : "전체 항목 수",
-            "format" : "int64",
-            "type" : "integer"
+            "description" : "전체 항목 수(int64 — JSON number의 2^53 정밀도 제한을 피해 string으로 표현)",
+            "type" : "string"
           },
           "totalPages" : {
             "description" : "전체 페이지 수",
