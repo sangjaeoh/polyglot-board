@@ -1,5 +1,5 @@
 # 한 번에 실행: docker compose up --build
-# postgres(스키마는 Flyway가 생성) → backend(8080) → frontend(3000) 순으로 healthcheck 게이트를 거쳐 기동한다.
+# postgres → migration(app-migration이 스키마 생성 후 종료) → backend(8080) → frontend(3000) 순으로 게이트를 거쳐 기동한다.
 name: board
 
 services:
@@ -20,6 +20,20 @@ services:
       timeout: 3s
       retries: 20
 
+  # 스키마 마이그레이션 원샷: app-migration이 실행→migrate→종료한다. 실행 앱은 부팅 시 Flyway를 실행하지 않는다.
+  migration:
+    build:
+      context: ./apps/backend
+      dockerfile: module-apps/app-migration/Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/boardapi
+      SPRING_DATASOURCE_USERNAME: boardapi
+      SPRING_DATASOURCE_PASSWORD: boardapi
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   backend:
     build:
       # 컨텍스트는 Gradle 멀티모듈 루트, Dockerfile은 실행 앱(app-api) 루트에 둔다.
@@ -34,6 +48,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8080/actuator/health > /dev/null || exit 1"]
       interval: 10s
@@ -41,7 +57,7 @@ services:
       retries: 30
       start_period: 30s
 
-  # 데모 시드: 백엔드 기동(Flyway 완료) 후 보드가 비어 있으면 예시 글을 넣고 종료한다.
+  # 데모 시드: 백엔드 기동(마이그레이션 완료 후) 뒤 보드가 비어 있으면 예시 글을 넣고 종료한다.
   # 백엔드 코드·테스트를 건드리지 않아 ./gradlew build(Testcontainers)에 영향이 없다.
   seed:
     image: postgres:17-alpine

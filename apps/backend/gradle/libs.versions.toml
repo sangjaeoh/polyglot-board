@@ -22,7 +22,6 @@ spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-star
 springdoc-starter = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 springdoc-common = { module = "org.springdoc:springdoc-openapi-starter-common", version.ref = "springdoc" }
 flyway-core = { module = "org.flywaydb:flyway-core" }
-spring-boot-flyway = { module = "org.springframework.boot:spring-boot-flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
 postgresql = { module = "org.postgresql:postgresql" }
 jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
@@ -35,6 +34,7 @@ spring-boot-webmvc-test = { module = "org.springframework.boot:spring-boot-webmv
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 spring-data-commons = { module = "org.springframework.data:spring-data-commons" }
+spring-boot-starter-jdbc = { module = "org.springframework.boot:spring-boot-starter-jdbc" }
 testcontainers-junit = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 palantir-java-format = { module = "com.palantir.javaformat:palantir-java-format", version.ref = "palantirJavaFormat" }
 

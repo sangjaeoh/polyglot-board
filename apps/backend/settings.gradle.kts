@@ -21,5 +21,6 @@ include(
     ":module-common:common-web",
     ":module-domains:domain-board",
     ":module-apps:app-api",
+    ":module-apps:app-migration",
     ":module-tests:test-architecture",
 )
