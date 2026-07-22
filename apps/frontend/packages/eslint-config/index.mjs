@@ -35,11 +35,13 @@ export function nextConfig({ tsconfigRootDir }) {
       plugins: { '@next/next': nextPlugin, boundaries },
       settings: {
         'boundaries/include': ['src/**/*'],
+        // Next 관례 파일(src 루트) — FSD 요소가 아니므로 경계 검사에서 제외한다.
+        'boundaries/ignore': ['src/instrumentation.ts'],
         'boundaries/elements': [
-          { type: 'app', pattern: 'src/app', mode: 'folder' },
-          { type: 'feature', pattern: 'src/features/*', mode: 'folder', capture: ['slice'] },
-          { type: 'entity', pattern: 'src/entities/*', mode: 'folder', capture: ['slice'] },
-          { type: 'shared', pattern: 'src/shared', mode: 'folder' },
+          { type: 'app', pattern: 'src/app' },
+          { type: 'feature', pattern: 'src/features/*', capture: ['slice'] },
+          { type: 'entity', pattern: 'src/entities/*', capture: ['slice'] },
+          { type: 'shared', pattern: 'src/shared' },
         ],
         'import/resolver': {
           // IDE(cwd=레포 루트)에서도 깨지지 않게 절대 경로로 합성한다.
@@ -49,21 +51,31 @@ export function nextConfig({ tsconfigRootDir }) {
       rules: {
         ...nextPlugin.configs.recommended.rules,
         ...nextPlugin.configs['core-web-vitals'].rules,
-        'boundaries/no-unknown-files': 'off',
-        'boundaries/no-unknown': 'off',
-        'boundaries/element-types': [
+        // 미등록 파일·미등록 요소 import는 error — widgets·FSD pages 등 레이어 신설을 차단한다.
+        'boundaries/no-unknown-files': 'error',
+        'boundaries/no-unknown-dependencies': 'error',
+        // 레이어 방향(레이어 표 그대로)과 public API 우회 deep import 차단을 한 규칙이 소유한다.
+        // 같은 요소 내부 import는 internal로 검사 대상이 아니다(app 내부 조립·슬라이스 내부 자유).
+        'boundaries/dependencies': [
           'error',
           {
             default: 'disallow',
-            message: 'FSD 레이어 방향 위반: ${file.type} → ${dependency.type}',
-            rules: [
-              { from: ['app'], allow: ['app', 'feature', 'entity', 'shared'] },
+            message:
+              'FSD 경계 위반: {{ from.element.type }} → {{ to.element.type }} (허용 레이어·public API 경유 확인)',
+            policies: [
               {
-                from: ['feature'],
-                allow: [['feature', { slice: '${from.slice}' }], 'entity', 'shared'],
+                from: { element: { type: 'app' } },
+                allow: { to: { element: { type: 'feature', fileInternalPath: 'index.{server,client}.ts' } } },
               },
-              { from: ['entity'], allow: [['entity', { slice: '${from.slice}' }], 'shared'] },
-              { from: ['shared'], allow: ['shared'] },
+              {
+                from: { element: { type: 'feature' } },
+                allow: [
+                  { to: { element: { type: 'entity', fileInternalPath: 'index.ts' } } },
+                  { to: { element: { type: 'shared' } } },
+                ],
+              },
+              { from: { element: { type: 'entity' } }, allow: { to: { element: { type: 'shared' } } } },
+              // shared의 의존 대상 "없음"은 정책 부재 + default disallow로 충족된다.
             ],
           },
         ],

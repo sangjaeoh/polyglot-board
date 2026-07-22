@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { buttonClass } from '@board/ui';
-import { ApiError, getPost } from '@/features/board/index.server';
+import { ApiError, getPost, type PostResponse } from '@/features/board/index.server';
 import { DeletePostButton, PostTime } from '@/features/board/index.client';
-import { type PostResponse } from '@/entities/post';
 
 async function loadPost(id: string): Promise<PostResponse> {
   try {
