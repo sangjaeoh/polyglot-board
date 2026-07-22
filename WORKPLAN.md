@@ -54,7 +54,7 @@
   - 내용: `.github/workflows`에 verify 파이프라인 신설 — mise 기반 툴체인(corretto-25·node 24·pnpm 9), Docker 가용 러너에서 `pnpm verify` 실행. `apps/frontend/docs/code-quality.md`의 "로컬 명령과 CI 명령은 동일하다"를 준수(스크립트 재사용, CI 전용 로직 금지).
   - 완료 기준: 워크플로 파일 존재, 실행 명령이 루트 `package.json` 스크립트와 동일, 로컬에서 동일 명령 통과.
 
-- [ ] **T4. oasdiff 파괴적 변경 게이트 배선** — 표면: root-infra
+- [x] **T4. oasdiff 파괴적 변경 게이트 배선** — 표면: root-infra
   - 근거: `docs/architecture.md` 강제 장치 표 "계약 파괴적 변경 | oasdiff", `docs/sharing.md` "파괴적 변경(삭제·의미 변경)은 oasdiff로 검사한다". 현재 저장소 어디에도 배선 없음.
   - 내용: CI에서 base 브랜치의 openapi.json 대비 breaking 검사 단계 추가(도구 설치·실행 방식은 설계에서 결정). 로컬 실행 스크립트도 제공하면 T3의 로컬=CI 동일성 유지.
   - 완료 기준: 워크플로에 oasdiff 단계 존재. 파괴적 변경을 임시로 만들어 로컬 시뮬레이션 시 검출됨(검증 후 원복).
@@ -138,3 +138,4 @@
 - T1: `pnpm openapi` 코드퍼스트 재방출로 복구(가이드 정본 경로). 삭제 직전(`eb72d33^`)과 바이트 동일 검증, codegen 무변경, OpenApiSnapshotTest `--rerun` 통과, `pnpm verify` 전체 통과. 커밋 `bc4e666`.
 - T2: drift:check에 `git ls-files --others --exclude-standard` fail-closed 체인 추가 — untracked·HEAD 삭제 사고 상태 검출(T1 사고 경로 재현으로 실증). staged 포함 porcelain 전체 검사는 정상 stage→verify 플로우를 깨는 DX 회귀라 기각(설계 리뷰 합의). 잔여 구멍(로그·후속 후보): staged-stray, 커밋된 stray(근본 해결은 codegen clean-regeneration), diff·ls-files 절의 경로 목록 2회 중복. 커밋 `c7f4cff`.
 - T3: `.github/workflows/verify.yml` 신설 — mise-action(SHA 핀, mise 2026.7.11 핀, `env: true`로 JAVA_HOME→corretto-25)·setup-gradle(SHA 핀) 후 `pnpm install --frozen-lockfile && pnpm verify`만 실행(CI 전용 로직 0). push 전 브랜치+PR 트리거(직push 워크플로우 대응), main은 cancel 제외. 검증: actionlint 1.7.12 통과, 로컬 CI 동일 시퀀스 통과. 한계·후속: 원격 첫 실행은 push 전이라 미검증 / required status check·브랜치 보호는 리포 설정 영역 / T4는 base ref fetch 추가 필요(fetch-depth 1 부족) / .mise.toml fuzzy 버전(`"9"` 등) 정밀 핀은 별도 root-infra 판단.
+- T4: `scripts/oasdiff-check.sh` + 루트 `oasdiff:check` 스크립트 + CI 스텝(fetch-depth 0) 신설. base=merge-base(HEAD, origin/main), base에 계약 없으면 신규 계약 skip-pass(현 origin/main 상태), Docker `tufin/oasdiff:v1.24.0` digest 핀, stdin+단일 파일 ro 마운트(Colima 호환), `--fail-on ERR`(WARN 승격·의도적 breaking용 err-ignore는 T8에서 판단). verify 체인 미포함(비밀폐적 게이트라 별도 스텝 — 설계 리뷰 합의). 검증: DELETE 오퍼레이션 임시 제거 시 exit 1 검출 후 원복, 무변경 exit 0, actionlint·`pnpm verify` 통과. 한계: main push는 self-compare 공허 통과(사전 게이트는 브랜치 push/PR에서 발화).
