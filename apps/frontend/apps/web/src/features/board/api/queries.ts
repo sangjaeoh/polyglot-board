@@ -1,3 +1,6 @@
+// 서버 전용 세그먼트 자체 가드 — api-client의 전이 가드에 기대지 않는다(리팩터로 조용히 소멸 가능).
+import 'server-only';
+
 import { cache } from 'react';
 import { getPost as fetchPost, getPosts as fetchPosts } from '@board/api-client';
 
