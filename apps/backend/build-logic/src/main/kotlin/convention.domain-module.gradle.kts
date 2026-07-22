@@ -8,6 +8,7 @@ dependencies {
 
     // 테스트 층 배선 — 단위(JUnit·Mockito)는 starter-test, 리포지토리 통합은 실 PostgreSQL(Testcontainers).
     "testImplementation"(libs.lib("spring-boot-starter-test"))
+    "testImplementation"(libs.lib("spring-boot-data-jpa-test"))
     "testImplementation"(libs.lib("spring-boot-testcontainers"))
     "testImplementation"(libs.lib("testcontainers-postgresql"))
     "testImplementation"(libs.lib("testcontainers-junit"))

@@ -1,30 +1,74 @@
 package com.board.board.application;
 
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
+import com.board.board.application.provided.PostModifier;
 import com.board.board.application.required.PostRepository;
+import com.board.board.domain.Post;
+import com.board.board.domain.exception.BoardErrorCode;
 import com.board.board.domain.exception.PostNotFoundException;
-import java.util.Optional;
+import com.board.board.support.ContainerConfig;
 import java.util.UUID;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.context.annotation.Import;
 
-/** {@link DefaultPostModifier}가 활성 게시글이 없을 때(미존재·이미 삭제) 예외를 전파하는지 검증한다. */
-@ExtendWith(MockitoExtension.class)
+/** {@link DefaultPostModifier}의 수정 행동을 실 DB 슬라이스로 검증한다(flush 후 재조회). */
+@DataJpaTest
+@Import({ContainerConfig.class, DefaultPostModifier.class})
 class DefaultPostModifierTest {
 
-    @Mock
+    @Autowired
+    private PostModifier postModifier;
+
+    @Autowired
     private PostRepository postRepository;
 
-    @Test
-    void editThrowsWhenActivePostAbsent() {
-        UUID id = UUID.randomUUID();
-        given(postRepository.findByIdAndDeletedAtIsNull(id)).willReturn(Optional.empty());
-        DefaultPostModifier postModifier = new DefaultPostModifier(postRepository);
+    @Autowired
+    private TestEntityManager entityManager;
 
-        assertThatExceptionOfType(PostNotFoundException.class).isThrownBy(() -> postModifier.edit(id, "제목", "본문"));
+    @Nested
+    @DisplayName("수정")
+    class Edit {
+
+        @Test
+        @DisplayName("활성 게시글을 수정하면 영속 상태에 반영된다")
+        void editPersistsReplacedTitleAndContent() {
+            Post post = postRepository.save(Post.create("제목", "본문", "글쓴이"));
+            entityManager.flush();
+            entityManager.clear();
+
+            postModifier.edit(post.getId(), "새 제목", "새 본문");
+
+            entityManager.flush();
+            entityManager.clear();
+            Post reloaded =
+                    postRepository.findByIdAndDeletedAtIsNull(post.getId()).orElseThrow();
+            assertThat(reloaded.getTitle()).isEqualTo("새 제목");
+            assertThat(reloaded.getContent()).isEqualTo("새 본문");
+            assertThat(reloaded.getAuthor()).isEqualTo("글쓴이");
+        }
+
+        @Test
+        @DisplayName("없거나 삭제된 게시글 수정은 POST_NOT_FOUND 예외를 던진다")
+        void editRejectsAbsentOrDeleted() {
+            Post deleted = postRepository.save(Post.create("삭제된 글", "본문", "글쓴이"));
+            deleted.delete();
+            entityManager.flush();
+            entityManager.clear();
+
+            PostNotFoundException absentThrown = catchThrowableOfType(
+                    PostNotFoundException.class, () -> postModifier.edit(UUID.randomUUID(), "새 제목", "새 본문"));
+            PostNotFoundException deletedThrown = catchThrowableOfType(
+                    PostNotFoundException.class, () -> postModifier.edit(deleted.getId(), "새 제목", "새 본문"));
+
+            assertThat(absentThrown.getErrorCode()).isEqualTo(BoardErrorCode.POST_NOT_FOUND);
+            assertThat(deletedThrown.getErrorCode()).isEqualTo(BoardErrorCode.POST_NOT_FOUND);
+        }
     }
 }
