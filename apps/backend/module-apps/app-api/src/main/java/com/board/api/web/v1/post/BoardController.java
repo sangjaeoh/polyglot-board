@@ -57,16 +57,17 @@ public class BoardController {
     @Operation(summary = "게시글을 작성한다")
     @ApiResponse(responseCode = "201", description = "작성된 게시글")
     public PostResponse createPost(@Valid @RequestBody PostCreateRequest request) {
-        return PostResponse.from(boardFacade.create(request.title(), request.content(), request.author()));
+        UUID id = boardFacade.create(request.title(), request.content(), request.author());
+        return PostResponse.from(boardFacade.getPost(id));
     }
 
-    /** 게시글을 수정한다. */
+    /** 게시글을 수정한다. operationId는 계약이 소유하는 공표 식별자라 메서드 개명과 무관하게 고정한다(하류 소비 파괴 방지). */
     @PutMapping("/{id}")
-    @Operation(summary = "게시글을 수정한다")
+    @Operation(operationId = "updatePost", summary = "게시글을 수정한다")
     @ApiResponse(responseCode = "200", description = "수정된 게시글")
-    public PostResponse updatePost(
+    public PostResponse editPost(
             @Parameter(description = "게시글 ID") @PathVariable UUID id, @Valid @RequestBody PostUpdateRequest request) {
-        boardFacade.update(id, request.title(), request.content());
+        boardFacade.edit(id, request.title(), request.content());
         return PostResponse.from(boardFacade.getPost(id));
     }
 

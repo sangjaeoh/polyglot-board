@@ -41,13 +41,13 @@ public class BoardFacade {
         return postReader.getPost(id);
     }
 
-    /** 게시글을 작성하고 생성 결과를 반환한다. */
-    public PostInfo create(String title, String content, String author) {
+    /** 게시글을 작성하고 생성된 ID를 반환한다(명령은 최소 결과). */
+    public UUID create(String title, String content, String author) {
         return postAppender.register(title, content, author);
     }
 
     /** 게시글을 수정한다. */
-    public void update(UUID id, String title, String content) {
+    public void edit(UUID id, String title, String content) {
         postModifier.edit(id, title, content);
     }
 
