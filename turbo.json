@@ -20,8 +20,11 @@
     "lint": {
       "dependsOn": ["^codegen", "codegen"]
     },
+    "test": {
+      "dependsOn": ["^codegen", "codegen"]
+    },
     "verify": {
-      "dependsOn": ["lint", "^lint", "typecheck", "^typecheck", "^codegen", "codegen"]
+      "dependsOn": ["lint", "^lint", "typecheck", "^typecheck", "test", "^test", "^codegen", "codegen"]
     },
     "backend#verify": {
       "dependsOn": ["backend#openapi"],

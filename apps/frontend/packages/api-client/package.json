@@ -7,7 +7,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@board/config": "workspace:*",
@@ -18,6 +19,8 @@
   "devDependencies": {
     "@board/tsconfig": "workspace:*",
     "@types/node": "^24.0.0",
-    "typescript": "^5.7.2"
+    "msw": "^2.15.0",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
   }
 }
