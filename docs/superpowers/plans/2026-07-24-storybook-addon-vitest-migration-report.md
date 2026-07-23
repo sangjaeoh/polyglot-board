@@ -4,9 +4,10 @@
 serve → `test-storybook` CLI) to `@storybook/addon-vitest` (runs directly against the Vite module graph via
 Vitest browser mode), per the plan at `docs/superpowers/plans/2026-07-24-storybook-addon-vitest-migration.md`.
 All 5 tasks are complete and individually reviewed (see `.superpowers/sdd/task-{1..4}-report.md` and
-`.superpowers/sdd/progress.md` for full detail); this file is the permanent summary. Final state:
-`pnpm run test-stories` (== `pnpm run verify`) passes 4 story files / 21 tests, and `pnpm run build-storybook`
-still succeeds unchanged.
+`.superpowers/sdd/progress.md` for full detail); this file is the permanent summary. Final state (after the
+post-review fixes below): `pnpm run test-stories` runs both Vitest projects (`storybook` + `browser-commands`)
+and passes 5 files / 23 tests; the root `pnpm run verify` (the actual CI gate — see Post-review fixes) passes
+end to end; `pnpm run build-storybook` still succeeds unchanged.
 
 **Task 1 — scaffold.** Ran the official `pnpm dlx storybook@latest add @storybook/addon-vitest --package-manager
 pnpm --yes` installer. It added `@storybook/addon-vitest` to `.storybook/main.ts`'s `addons` array, added
@@ -74,5 +75,21 @@ with the old script and as a defensive no-op.) The telemetry call itself is fire
 could never have caused a hang — but it was a genuine, previously-unguarded outbound network call. Both env vars
 were added directly to the `test-stories` script string in `package.json`
 (`STORYBOOK_DISABLE_TELEMETRY=1 STORYBOOK_TELEMETRY_DISABLED=1 vitest run --project=storybook`), and re-verified
-telemetry-free under `env -i PATH="$PATH" pnpm run test-stories`. `pnpm run verify` exits 0 as the final clean
-gate run: 4 test files / 21 tests passing, matching the pre-migration baseline exactly.
+telemetry-free under `env -i PATH="$PATH" pnpm run test-stories`. This inline `VAR=1 command` syntax is
+POSIX-shell-only; a `cross-env` dependency was deliberately not added because every environment this script
+actually runs in — local dev (macOS/Linux) and the CI gate (`.github/workflows/verify.yml`, `runs-on:
+ubuntu-latest`) — is a POSIX shell, not because the repo has no CI (it does: a real workflow runs `pnpm verify`
+on every push/PR). `pnpm run verify` exits 0 as the final clean gate run: 4 test files / 21 tests passing,
+matching the pre-migration baseline exactly.
+
+**Post-review fixes.** The final review found the package-scoped `test-stories`/`verify` numbers above were
+green while the actual CI gate — root `pnpm run verify`, which additionally runs `depcruise:frontend` — was
+not: `apps/frontend/.dependency-cruiser.cjs`'s `no-orphans` rule had no exception for
+`vitest.setColorScheme.test.ts` (Task 2's regression test, loaded only via the `browser-commands` Vitest project
+because `storybookTest` clears `test.include` on any project it's attached to), so `depcruise:frontend` failed;
+separately, `test-stories` only ran `--project=storybook`, so that same regression test never executed as part
+of `verify` at all, leaving a coverage gap open across Tasks 2–4. Both were fixed: a `pathNot` exception
+(`(^|/)vitest\.[^/]+\.test\.ts$`, matching the existing exception style) was added to `no-orphans`, and
+`test-stories` now runs `vitest run --project=storybook --project=browser-commands`, bringing the count to 5
+files / 23 tests. Root `pnpm run verify` (`turbo run verify && pnpm run depcruise:frontend && pnpm run
+drift:check`) now passes end to end.
