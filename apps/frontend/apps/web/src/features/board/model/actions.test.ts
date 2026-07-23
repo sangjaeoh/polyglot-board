@@ -57,6 +57,16 @@ describe('updatePostAction', () => {
     expect(state.message).toBe('잘못된 요청입니다.');
     expect(updateTag).not.toHaveBeenCalled();
   });
+
+  it('수정에 성공하면 목록·상세 캐시를 무효화하고 상세로 리다이렉트한다', async () => {
+    server.use(http.put(`${BASE_URL}/api/v1/posts/:id`, () => HttpResponse.json(VALID_POST)));
+
+    await expect(
+      updatePostAction(VALID_POST.id, null, formData({ title: '수정한 제목', content: '수정한 본문' })),
+    ).rejects.toThrow(`NEXT_REDIRECT:/posts/${VALID_POST.id}`);
+    expect(updateTag).toHaveBeenCalledWith('post-list');
+    expect(updateTag).toHaveBeenCalledWith(`post-${VALID_POST.id}`);
+  });
 });
 
 describe('deletePostAction', () => {

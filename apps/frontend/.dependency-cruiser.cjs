@@ -52,7 +52,10 @@ module.exports = {
           '^packages/[^/]+/src/index\\.ts$',
           '^packages/config/src/server\\.ts$',
           // 도구 설정 파일은 도구가 관례로 로드한다.
-          '(^|/)(next|postcss|eslint)\\.config\\.(js|cjs|mjs|ts)$',
+          '(^|/)(next|postcss|eslint|vitest)\\.config\\.(js|cjs|mjs|ts)$',
+          '(^|/)vitest\\.setup\\.ts$',
+          // resolve.alias로만 연결되는 테스트 목 파일 — 정적 의존 그래프에 안 잡히는 게 정상이다.
+          '(^|/)__mocks__/',
           // 워크벤치 스토리·설정·게이트 스크립트는 Storybook이 관례로 로드한다.
           '\\.stories\\.(ts|tsx)$',
           '(^|/)\\.storybook/',
