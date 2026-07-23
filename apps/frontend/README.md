@@ -56,7 +56,7 @@ frontend/
 ## 데이터 흐름
 
 - 읽기는 RSC 서버 페치다. 페이지가 `api-client`를 통해 백엔드를 직접 호출하고, 클라이언트 번들에는 내부 URL이 실리지 않는다(`server-only` 가드).
-- 쓰기는 Server Actions다. 폼 입력(ingress)을 서버에서 Zod로 다시 검증하고, 성공 시 `revalidatePath` 후 리다이렉트한다.
+- 쓰기는 Server Actions다. 폼 입력(ingress)을 서버에서 Zod로 다시 검증하고, 성공 시 `updateTag`로 캐시를 무효화한 뒤 리다이렉트한다.
 - 백엔드 에러(RFC 9457 ProblemDetail)는 `ApiError`로 감싸 폼 필드 에러로 매핑한다. 예상 밖 에러는 에러 바운더리로 넘긴다.
 - 타입·Zod 스키마는 루트 `shared-types`가 계약에서 생성한 것만 쓴다. 수기 타입을 두지 않는다 → [`docs/sharing.md`](../../docs/sharing.md).
 
