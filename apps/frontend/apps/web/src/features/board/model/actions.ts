@@ -2,7 +2,14 @@
 
 import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ApiError, createPost, deletePost, postIdSchema, updatePost, type PostId } from '@board/api-client';
+import {
+  ApiError,
+  createPost,
+  deletePost,
+  postIdSchema,
+  updatePost,
+  type PostId,
+} from '@board/api-client';
 import { postListTag, postTag } from '@/entities/post';
 import { postCreateRequestSchema, postUpdateRequestSchema } from 'shared-types';
 import type { ZodError } from 'zod';

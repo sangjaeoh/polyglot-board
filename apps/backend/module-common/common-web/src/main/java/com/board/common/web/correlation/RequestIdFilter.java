@@ -18,8 +18,7 @@ public class RequestIdFilter extends OncePerRequestFilter {
     private static final String MDC_KEY = "requestId";
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String requestId = request.getHeader(HEADER_NAME);
         if (requestId == null || requestId.isBlank()) {
