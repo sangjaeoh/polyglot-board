@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit",
-    "verify": "pnpm run format:check"
+    "verify": "pnpm run format:check",
+    "test": "vitest run"
   },
   "dependencies": {
     "@board/api-client": "workspace:*",
@@ -28,12 +29,16 @@
     "@board/eslint-config": "workspace:*",
     "@board/tsconfig": "workspace:*",
     "@tailwindcss/postcss": "^4.3.2",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.18.0",
+    "jsdom": "^29.1.1",
     "prettier": "^3.9.5",
     "tailwindcss": "^4.3.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
   }
 }
