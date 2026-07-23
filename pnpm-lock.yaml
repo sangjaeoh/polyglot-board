@@ -77,6 +77,9 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1
+      msw:
+        specifier: ^2.15.0
+        version: 2.15.0(@types/node@24.13.3)(typescript@5.9.3)
       prettier:
         specifier: ^3.9.5
         version: 3.9.5

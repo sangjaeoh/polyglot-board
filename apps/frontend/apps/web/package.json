@@ -36,6 +36,7 @@
     "@types/react-dom": "^19.2.0",
     "eslint": "^9.18.0",
     "jsdom": "^29.1.1",
+    "msw": "^2.15.0",
     "prettier": "^3.9.5",
     "tailwindcss": "^4.3.2",
     "typescript": "^5.7.2",
