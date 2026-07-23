@@ -12,7 +12,7 @@ const config: StorybookConfig = {
   // 스토리는 컴포넌트 옆에 co-locate한다(coding-conventions.md 네이밍).
   stories: ['../src/**/*.stories.@(ts|tsx)'],
   // a11y=axe 검사 대상, pseudo-states=hover·focus-visible·active를 매트릭스에 강제 렌더.
-  addons: ['@storybook/addon-a11y', 'storybook-addon-pseudo-states'],
+  addons: ['@storybook/addon-a11y', 'storybook-addon-pseudo-states', '@storybook/addon-vitest'],
   viteFinal: (viteConfig) => {
     viteConfig.plugins = viteConfig.plugins ?? [];
     viteConfig.plugins.push(tailwindcss());

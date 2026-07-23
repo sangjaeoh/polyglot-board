@@ -25,6 +25,7 @@
     "@board/eslint-config": "workspace:*",
     "@board/tsconfig": "workspace:*",
     "@storybook/addon-a11y": "10.5.0",
+    "@storybook/addon-vitest": "10.5.3",
     "@storybook/react-vite": "10.5.0",
     "@storybook/test-runner": "0.24.4",
     "@tailwindcss/vite": "4.3.2",
@@ -37,6 +38,9 @@
     "storybook": "10.5.0",
     "storybook-addon-pseudo-states": "10.5.0",
     "typescript": "^5.7.2",
-    "vite": "8.1.4"
+    "vite": "8.1.4",
+    "vitest": "^4.1.10",
+    "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10"
   }
 }
