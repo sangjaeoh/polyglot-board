@@ -14,7 +14,7 @@ import './preview.css';
  * 선택 테마의 원시값을 래퍼에 인라인 커스텀 프로퍼티로 얹는다 — 값을 워크벤치에 재작성하지 않는다
  * (design-system.md 변경과 폐기: 같은 역할 토큰 중복 금지). 이는 워크벤치 전용 경로다.
  *
- * 게이트(test-runner)는 이 토글이 아니라 실제 prefers-color-scheme 미디어 에뮬레이션으로 양 테마를
+ * 게이트(addon-vitest)는 이 토글이 아니라 실제 prefers-color-scheme 미디어 에뮬레이션으로 양 테마를
  * 자동 검증한다 — shipped 경로를 그대로 친다. 두 경로가 서로를 교차검증한다(code-quality.md 게이트).
  */
 function paletteVars(block: string | undefined): CSSProperties | undefined {
@@ -34,7 +34,7 @@ const darkPalette = paletteVars(
 
 // 파싱은 tokens.css 포맷(최상위 :root, @media dark 내 :root)에 결합돼 있다. 포맷이 바뀌어
 // 매칭이 깨지면 토글이 조용히 무력화되는 대신 크게 실패한다 — 프리뷰 로드 시 던지므로
-// test-runner 스모크가 잡는다(게이트 커버리지 밖의 이 경로를 게이트로 끌어들인다).
+// addon-vitest 스모크가 잡는다(게이트 커버리지 밖의 이 경로를 게이트로 끌어들인다).
 if (!lightPalette || !darkPalette) {
   throw new Error(
     'tokens.css 팔레트 파싱 실패(:root 라이트 / @media dark) — 포맷 변경 시 preview.tsx 정규식을 갱신한다.',
