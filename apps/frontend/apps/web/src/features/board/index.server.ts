@@ -9,5 +9,5 @@ export {
 export { PostList } from './ui/PostList';
 export { ApiError } from '@board/api-client';
 // app 레이어는 features만 소비한다(레이어 표) — entity 타입·ingress 스키마는 feature public API가 재노출한다.
-export type { PostResponse } from '@/entities/post';
-export { postIdSchema } from '@/entities/post';
+export type { PostResponse } from '@board/api-client';
+export { postIdSchema } from '@board/api-client';

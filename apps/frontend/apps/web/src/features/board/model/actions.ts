@@ -2,13 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ApiError, createPost, deletePost, updatePost } from '@board/api-client';
-import {
-  postCreateRequestSchema,
-  postIdSchema,
-  postUpdateRequestSchema,
-  type PostId,
-} from 'shared-types';
+import { ApiError, createPost, deletePost, postIdSchema, updatePost, type PostId } from '@board/api-client';
+import { postCreateRequestSchema, postUpdateRequestSchema } from 'shared-types';
 import type { ZodError } from 'zod';
 
 export interface FormState {

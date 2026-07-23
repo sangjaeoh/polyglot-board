@@ -1,16 +1,8 @@
 import 'server-only';
 
 import { getServerEnv } from '@board/config/server';
-import {
-  postPageResponseSchema,
-  postResponseSchema,
-  problemDetailSchema,
-  type PostCreateRequest,
-  type PostId,
-  type PostPageResponse,
-  type PostResponse,
-  type PostUpdateRequest,
-} from 'shared-types';
+import { type PostCreateRequest, type PostUpdateRequest, problemDetailSchema } from 'shared-types';
+import { postPageResponseSchema, postResponseSchema, type PostId, type PostPageResponse, type PostResponse } from './schemas';
 import { z, type ZodType, type ZodTypeDef } from 'zod';
 import { ApiError } from './error';
 

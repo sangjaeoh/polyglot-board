@@ -1,15 +1,5 @@
-import {
-  postIdSchema,
-  postResponseSchema,
-  postPageResponseSchema,
-  type PostId,
-  type PostResponse,
-  type PostSummary,
-  type PostPageResponse,
-} from 'shared-types';
+import type { PostId, PostPageResponse, PostResponse, PostSummary } from '@board/api-client';
 
-// 프론트 read-model은 백엔드 진실의 투영이다. 스키마는 계약에서 생성된 것을 재노출하고, 순수 뷰 파생만 더한다.
-export { postIdSchema, postResponseSchema, postPageResponseSchema };
 export type { PostId, PostResponse, PostSummary, PostPageResponse };
 
 /**
