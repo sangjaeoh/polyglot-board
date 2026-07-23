@@ -99,7 +99,7 @@
 
 ### 캐시
 
-- 캐시 태그 taxonomy를 명시한다.
+- 캐시 태그 taxonomy는 대상 read-model을 소유한 entities 계층이 상수로 소유한다.
 - per-user 캐시와 shared 캐시 태그를 분리한다.
 - auth 스코프 데이터를 shared 캐시로 저장하지 않는다.
 - 무효화 소유자를 하나로 둔다.
