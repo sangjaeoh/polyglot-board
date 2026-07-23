@@ -54,6 +54,10 @@ module.exports = {
           // 도구 설정 파일은 도구가 관례로 로드한다.
           '(^|/)(next|postcss|eslint|vitest)\\.config\\.(js|cjs|mjs|ts)$',
           '(^|/)vitest\\.setup\\.ts$',
+          // storybookTest 플러그인이 project.test.include를 강제 대체해 storybook project에
+          // 실릴 수 없는 커맨드 회귀 테스트(vitest.config.ts의 browser-commands project)는
+          // Vitest가 include 글롭으로 관례 로드하므로 정적 그래프에서 고아가 정상이다.
+          '(^|/)vitest\\.[^/]+\\.test\\.ts$',
           // resolve.alias로만 연결되는 테스트 목 파일 — 정적 의존 그래프에 안 잡히는 게 정상이다.
           '(^|/)__mocks__/',
           // 워크벤치 스토리·설정·게이트 스크립트는 Storybook이 관례로 로드한다.
