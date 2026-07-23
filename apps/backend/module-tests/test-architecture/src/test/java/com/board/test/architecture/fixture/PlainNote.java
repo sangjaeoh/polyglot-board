@@ -1,4 +1,4 @@
-package com.board.architecture.fixture;
+package com.board.test.architecture.fixture;
 
 /** base finder 규칙 픽스처 — deletedAt 없는 엔티티(문서 예외: base finder 그대로 사용). */
 public class PlainNote {

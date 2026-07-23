@@ -1,4 +1,4 @@
-package com.board.architecture.fixture;
+package com.board.test.architecture.fixture;
 
 import java.time.Instant;
 

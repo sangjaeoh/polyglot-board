@@ -1,15 +1,15 @@
-package com.board.architecture;
+package com.board.test.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.board.architecture.fixture.GenericBaseCaller;
-import com.board.architecture.fixture.GenericBaseRepository;
-import com.board.architecture.fixture.PlainNote;
-import com.board.architecture.fixture.PlainNoteCaller;
-import com.board.architecture.fixture.PlainNoteRepository;
-import com.board.architecture.fixture.SoftDeletedNote;
-import com.board.architecture.fixture.SoftDeletedNoteCaller;
-import com.board.architecture.fixture.SoftDeletedNoteRepository;
+import com.board.test.architecture.fixture.GenericBaseCaller;
+import com.board.test.architecture.fixture.GenericBaseRepository;
+import com.board.test.architecture.fixture.PlainNote;
+import com.board.test.architecture.fixture.PlainNoteCaller;
+import com.board.test.architecture.fixture.PlainNoteRepository;
+import com.board.test.architecture.fixture.SoftDeletedNote;
+import com.board.test.architecture.fixture.SoftDeletedNoteCaller;
+import com.board.test.architecture.fixture.SoftDeletedNoteRepository;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import org.junit.jupiter.api.Test;

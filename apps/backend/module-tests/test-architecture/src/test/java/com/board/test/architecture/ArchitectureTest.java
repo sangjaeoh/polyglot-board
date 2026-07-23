@@ -1,4 +1,4 @@
-package com.board.architecture;
+package com.board.test.architecture;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;

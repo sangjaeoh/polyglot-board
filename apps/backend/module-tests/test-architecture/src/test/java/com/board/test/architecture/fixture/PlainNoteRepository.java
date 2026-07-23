@@ -1,4 +1,4 @@
-package com.board.architecture.fixture;
+package com.board.test.architecture.fixture;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
