@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "codegen": "orval --config ./orval.config.ts && prettier --write ./src/generated",
+    "codegen": "orval --config ./orval.config.ts && node ./scripts/generate-problem-detail.mjs && prettier --write ./src/generated",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
