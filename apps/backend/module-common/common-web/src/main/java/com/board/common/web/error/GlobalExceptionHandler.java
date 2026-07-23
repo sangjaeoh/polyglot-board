@@ -2,6 +2,7 @@ package com.board.common.web.error;
 
 import com.board.common.core.error.BaseException;
 import com.board.common.core.error.ErrorCode;
+import com.board.common.web.correlation.RequestIdFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
@@ -95,14 +96,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * 관측용 확장 멤버를 싣는다 — {@code instance}는 요청 경로, {@code traceId}는 MDC 트레이스 ID(없으면 생성
-     * UUID). 반환한 traceId를 서버 로그에 남기면 사용자 에러 리포트와 상관시킬 수 있다.
+     * 관측용 확장 멤버를 싣는다 — {@code instance}는 요청 경로, {@code traceId}는 상관 ID(MDC 키
+     * {@code requestId}, {@link RequestIdFilter} 소유. 없으면 생성 UUID). 반환한 traceId를 서버 로그에
+     * 남기면 사용자 에러 리포트와 상관시킬 수 있다.
      */
     private static String applyObservability(ProblemDetail problem, @Nullable String path) {
         if (path != null) {
             problem.setInstance(URI.create(path));
         }
-        String traceId = MDC.get("traceId");
+        String traceId = MDC.get("requestId");
         if (traceId == null) {
             traceId = UUID.randomUUID().toString();
         }

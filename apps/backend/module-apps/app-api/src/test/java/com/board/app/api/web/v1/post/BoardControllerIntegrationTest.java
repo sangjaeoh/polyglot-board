@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -109,6 +110,21 @@ class BoardControllerIntegrationTest {
             // 실행 순서 독립성: 이 테스트가 만든 글을 정리해 다른 테스트의 목록 단언을 오염시키지 않는다.
             mockMvc.perform(delete("/api/v1/posts/{id}", firstId)).andExpect(status().isNoContent());
             mockMvc.perform(delete("/api/v1/posts/{id}", secondId)).andExpect(status().isNoContent());
+        }
+    }
+
+    @Nested
+    @DisplayName("상관 ID")
+    class CorrelationId {
+
+        @Test
+        @DisplayName("X-Request-Id 요청 헤더를 보내면 응답 헤더로 반환하고 에러 응답 traceId와 일치한다")
+        void echoesRequestIdAndMatchesTraceId() throws Exception {
+            mockMvc.perform(get("/api/v1/posts/{id}", "00000000-0000-0000-0000-000000000000")
+                            .header("X-Request-Id", "test-correlation-id"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(header().string("X-Request-Id", "test-correlation-id"))
+                    .andExpect(jsonPath("$.traceId").value("test-correlation-id"));
         }
     }
 
