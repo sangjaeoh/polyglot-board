@@ -2,10 +2,10 @@
 
 ## 언제
 
-- 새 앱·공유 패키지·feature 슬라이스를 추가할 때
-- 모듈 경계와 의존 방향을 정할 때
-- 서버/클라 구조 경계와 시크릿 위치를 정할 때
-- 공유 도메인 read-model 배치 위치를 정할 때
+- 새 앱·공유 패키지·feature 슬라이스를 추가할 때.
+- 모듈 경계와 의존 방향을 정할 때.
+- 서버/클라 구조 경계와 시크릿 위치를 정할 때.
+- 공유 도메인 read-model 배치 위치를 정할 때.
 
 ## 규칙
 
@@ -88,7 +88,7 @@
 
 - `app/`이 컴포지션 루트다.
 - `page.tsx`는 얇게 유지한다.
-- feature 조립만 하고 도메인 로직은 두지 않는다.
+- `page.tsx`는 feature 조립만 하고 도메인 로직은 두지 않는다.
 - URL 없는 그룹은 `(group)`으로 구성한다.
 - 라우트 전용 조립 코드는 `_components`에 둔다.
 
@@ -96,7 +96,8 @@
 
 - 기본 런타임은 Node다.
 - Edge는 글로벌 저지연이 명확히 필요한 경로에서만 `runtime = 'edge'`로 opt-in한다.
-- React Compiler는 Next 16에서 stable이며 기본은 off다. `reactCompiler: true`로 opt-in한다.
+- React Compiler는 Next 16에서 stable이며 기본은 off다.
+- `reactCompiler: true`로 opt-in한다.
 - env는 `packages/config`의 Zod 스키마로 부팅 시 검증한다.
 - 시크릿은 환경변수로만 주입한다.
 - Pages Router는 사용하지 않는다.
@@ -105,8 +106,6 @@
 
 - Turborepo + pnpm workspaces를 기본으로 한다.
 - Nx는 코드젠·polyglot 요구가 생길 때 검토한다.
-- FSD는 lite 형태만 사용한다.
-- `widgets`, `pages` 레이어는 두지 않는다.
 
 ### 공개 계약
 
@@ -138,7 +137,7 @@
 - 공용 `tsconfig` 상속
 - 공용 `eslint-config` 상속
 
-### 빌드 불변식
+### 빌드가 강제하는 불변식
 
 | 도구 | 강제 대상 |
 |---|---|
@@ -148,22 +147,22 @@
 
 #### dependency-cruiser
 
-- 워크스페이스 방향 위반 금지
-- 앱 간 import 금지
-- 패키지 순환 금지
-- 고아 모듈 금지
+- 워크스페이스 방향 위반을 금지한다.
+- 앱 간 import를 금지한다.
+- 패키지 순환을 금지한다.
+- 고아 모듈을 금지한다.
 
 #### eslint-plugin-boundaries
 
-- feature→feature 금지
-- shared→상위 레이어 금지
-- public API 우회 deep import 금지
-- `widgets`, FSD `pages` 사용 금지
+- feature→feature import를 금지한다.
+- shared→상위 레이어 의존을 금지한다.
+- public API 우회 deep import를 금지한다.
+- `widgets`·FSD `pages` 사용을 금지한다.
 
 #### poison import
 
-- 클라에서 `api-client` import 금지
-- 클라에서 `auth`의 server-only 코어 import 금지
+- 클라에서 `api-client` import를 금지한다.
+- 클라에서 `auth`의 server-only 코어 import를 금지한다.
 
 - 같은 관심사를 중복 검사하지 않는다.
 - `steiger`는 사용하지 않는다.
