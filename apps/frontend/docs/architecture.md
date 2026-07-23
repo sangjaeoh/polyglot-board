@@ -4,7 +4,7 @@
 
 - 새 앱·공유 패키지·feature 슬라이스를 추가할 때.
 - 모듈 경계와 의존 방향을 정할 때.
-- 서버/클라 구조 경계와 시크릿 위치를 정할 때.
+- 서버/클라이언트 구조 경계와 시크릿 위치를 정할 때.
 - 공유 도메인 read-model 배치 위치를 정할 때.
 
 ## 규칙
@@ -19,15 +19,14 @@
 | 워크스페이스 | 역할 | 의존 가능 대상 |
 |---|---|---|
 | `apps/*` | 실행 앱 | 모든 `packages/*` |
-| `packages/entities` | 공유 read-model·타입·Zod 스키마 | 하위 패키지 |
-| `packages/ui` | 디자인시스템 | 하위 패키지 |
-| `packages/api-client` | 타입드 클라이언트(server-only) | 하위 패키지 |
-| `packages/auth` | 인증 코어·클라 훅 분리 | 하위 패키지 |
+| `packages/entities` | 공유 read-model·타입·Zod 스키마 | `config` |
+| `packages/ui` | 디자인시스템 | `config` |
+| `packages/api-client` | 타입드 클라이언트(server-only) | `entities`, `config` |
+| `packages/auth` | 인증 코어·클라이언트 훅 분리 | `entities`, `config` |
 | `packages/config` | 공용 설정·상수·env 스키마 | 없음 |
 
 - `apps/* → packages/*`만 허용한다.
 - `packages → apps`, `app ↔ app`, 패키지 순환은 금지한다.
-- `packages/entities`는 `ui`, `api-client`, `auth`에 의존하지 않는다.
 - 공유 기준:
   - 두 앱 이상 사용 → `packages/*`
   - 단일 앱 전용 → 앱 내부 `src/`
@@ -40,7 +39,7 @@
 
 | 레이어 | 역할 | 의존 가능 대상 |
 |---|---|---|
-| `app/` | 라우팅·레이아웃·페이지 조립(컴포지션 루트) | `features` |
+| `app/` | 라우팅·레이아웃·페이지 조립(컴포지션 루트) | `features`, `entities`, `shared` |
 | `features/` | 사용자 행위 단위 | `entities`, `shared` |
 | `entities/` | read-model·타입·스키마·순수 매퍼 | `shared` |
 | `shared/` | 기술 지원(ui·lib·config), 도메인 무지 | 없음 |
@@ -49,33 +48,29 @@
 - `features` 간 직접 import는 금지한다.
 - 교차 feature 조립은 `app/`이 담당한다.
 - `widgets`, FSD `pages` 레이어는 사용하지 않는다.
-- FSD는 lite 형태만 사용한다.
 - 레이어 확장은 경계 설정 변경으로만 허용한다.
 
 ### 앱 구성
 
-| 앱 | 책임 | 데이터 접근 |
-|---|---|---|
-| `web` | 공개 사용자 화면·API | RSC·Server Action |
-| `admin` | 어드민·백오피스 | 동일 |
-
+- 앱마다 책임 범위가 다를 수 있다.
+- 데이터 접근 방식(RSC·Server Action)은 앱 전체에서 동일하게 적용한다.
 - 앱은 배포 단위다.
 - 새 앱 추가 시 워크스페이스 조립만 변경한다.
 
-### 세그먼트 구조와 서버/클라 경계
+### 세그먼트 구조와 서버/클라이언트 경계
 
 - 슬라이스는 `ui`, `model`, `api` 세그먼트로 분리한다.
-- 클라 코드는 `ui`에 두고 `index.client.ts`로 공개한다.
+- 클라이언트 코드는 `ui`에 두고 `index.client.ts`로 공개한다.
 - 서버 전용 코드는 `api`에 두고 `server-only`로 가드한다.
 - 공개 API는 `index.client.ts`, `index.server.ts`로 분리한다.
-- 서버·클라 혼합 배럴(`index.ts`)은 금지한다.
-- 클라 import 시 서버 모듈이 클라 그래프에 포함되지 않도록 분리한다.
-- `server-only`, `client-only` 포이즌 임포트로 서버·클라 누수를 빌드 에러로 차단한다.
+- 서버·클라이언트 혼합 배럴(`index.ts`)은 금지한다.
+- 클라이언트 import 시 서버 모듈이 클라이언트 그래프에 포함되지 않도록 분리한다.
+- `server-only`, `client-only` 포이즌 임포트로 서버·클라이언트 누수를 빌드 에러로 차단한다.
 
 ### 서버 경계
 
-- API 키, 세션 토큰, 내부 URL, PII를 클라 번들·`NEXT_PUBLIC_*`·로그에 노출하지 않는다.
-- 클라 공개 값만 `NEXT_PUBLIC_` 접두사를 사용한다.
+- API 키, 세션 토큰, 내부 URL, PII를 클라이언트 번들·`NEXT_PUBLIC_*`·로그에 노출하지 않는다.
+- 클라이언트 공개 값만 `NEXT_PUBLIC_` 접두사를 사용한다.
 - 공유 read-model → `packages/entities`
 - 앱 전용 read-model → 앱 내부 `entities/`
 - `packages/api-client`는 인증 컨텍스트를 전파하는 `server-only` 타입드 클라이언트다.
@@ -105,7 +100,8 @@
 ### 기술 선택 기준
 
 - Turborepo + pnpm workspaces를 기본으로 한다.
-- Nx는 코드젠·polyglot 요구가 생길 때 검토한다.
+- Nx는 채택하지 않는다.
+- polyglot 통합은 Turborepo + 언어별 빌드 위임으로 처리한다.
 
 ### 공개 계약
 
@@ -143,7 +139,7 @@
 |---|---|
 | `dependency-cruiser` | 워크스페이스 방향 |
 | `eslint-plugin-boundaries` | FSD 레이어 |
-| `server-only` / `client-only` | 서버·클라 경계 |
+| `server-only` / `client-only` | 서버·클라이언트 경계 |
 
 #### dependency-cruiser
 
@@ -159,10 +155,11 @@
 - public API 우회 deep import를 금지한다.
 - `widgets`·FSD `pages` 사용을 금지한다.
 
-#### poison import
+#### 포이즌 임포트
 
-- 클라에서 `api-client` import를 금지한다.
-- 클라에서 `auth`의 server-only 코어 import를 금지한다.
+- 클라이언트에서 `api-client` import를 금지한다.
+- 클라이언트에서 `auth`의 server-only 코어 import를 금지한다.
 
 - 같은 관심사를 중복 검사하지 않는다.
 - `steiger`는 사용하지 않는다.
+  - `widgets`·`pages`를 제외한 FSD-lite 구조와 규칙 세트가 맞지 않고, 레이어 경계 검사는 eslint-plugin-boundaries가 이미 소유한다.

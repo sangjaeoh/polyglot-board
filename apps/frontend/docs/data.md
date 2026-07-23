@@ -12,11 +12,9 @@
 
 ### read-model
 
-- 프론트 도메인 모델은 백엔드 진실의 read-model이다.
-- read-model을 진실 원천으로 사용하지 않는다.
-- 백엔드가 거부할 불변식은 read-model에서 강제하지 않는다.
-- 진실 소유는 백엔드다.
+- 프론트 도메인 모델은 백엔드가 소유한 진실의 read-model이며 진실 원천이 아니다.
 - read-model은 백엔드 데이터의 투영이며 Zod 스키마와 순수 뷰 파생(포맷·표시 계산)만 가진다.
+- 백엔드가 거부할 불변식은 read-model에서 강제하지 않는다.
 - 타입 파생은 → [coding-conventions](coding-conventions.md)의 타입을 따른다.
 - 클라이언트 전달 뷰모델은 직렬화 가능하고 최소화한다.
 - read-model 배치는 → [architecture](architecture.md)의 서버 경계를 따른다.
@@ -30,7 +28,7 @@
   - 앱 상태 저장소로 사용하지 않는다.
   - `queryFn`은 route handler(GET)를 호출한다.
   - Server Action을 조회 페치 용도로 사용하지 않는다.
-    - POST·내비게이션 단위 실행으로 직렬화 지연을 만든다.
+    - Server Action은 클라이언트당 순차 실행되어 병렬 조회가 불가능하고 응답이 캐시되지 않는다.
 - 독립 데이터는 서버에서 병렬 조회한다(`Promise.all`).
 - 순차 `await` 체인으로 워터폴을 만들지 않는다.
 - 느린 소스는 Suspense 경계로 분리해 스트리밍한다.
@@ -48,9 +46,9 @@
 
 ### BFF 경계
 
-- BFF는 데이터 shape·join·filter·cache를 수행할 수 있다.
+- BFF는 데이터 형상 변환·조인·필터링·캐싱을 수행할 수 있다.
 - 백엔드가 소유해야 할 비즈니스 규칙은 생성하지 않는다.
-- BFF 비즈니스 규칙은 백엔드와 규칙 drift를 만든다.
+  - BFF 비즈니스 규칙은 백엔드와 규칙 drift를 만든다.
 - 크로스 소스 조립은 서버에서 병렬 집약한다.
 
 ### api-client
@@ -82,7 +80,7 @@
 - 봉투 실패는 throw한다.
 - 항목 배열은 개별 `safeParse`한다.
 - 불량 항목은 드롭하고 서버 로그를 남긴다.
-- 드롭 시 pagination meta와 항목 수가 불일치한다.
+- 드롭 시 pagination meta와 항목 수의 불일치를 허용한다.
 - 정합성이 중요한 화면은 드롭하지 않고 throw한다.
 
 #### 상세 egress
@@ -94,12 +92,12 @@
 #### API 방식
 
 - 백엔드가 별도 서비스면 tRPC를 사용하지 않는다.
-- 코드젠 + Zod 기반 타입 클라이언트로 배포 결합 없이 계약을 유지한다.
+- 코드젠 + Zod 기반 타입드 클라이언트로 배포 결합 없이 계약을 유지한다.
 - 백엔드가 TS 모노레포로 통합되면 재검토한다.
 
 ### 캐시
 
-- 캐시 태그 taxonomy는 대상 read-model을 소유한 entities 계층이 상수로 소유한다.
+- 캐시 태그 taxonomy는 대상 read-model의 entities 계층이 상수로 소유한다.
 - per-user 캐시와 shared 캐시 태그를 분리한다.
 - auth 스코프 데이터를 shared 캐시로 저장하지 않는다.
 - 무효화 소유자를 하나로 둔다.
@@ -122,7 +120,7 @@
 
 #### 성공 응답
 
-- 스칼라·객체 응답은 envelope 없이 반환한다.
+- 스칼라·객체 응답은 봉투 없이 반환한다.
 - 리스트 응답은 pagination meta를 포함한다.
 - 기본 페이지네이션은 offset이다.
   - 총개수·`page`·`pageSize` 포함.

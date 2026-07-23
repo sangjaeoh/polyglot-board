@@ -23,8 +23,10 @@
   - route handler: `route.ts`
   - 스키마: `schema.ts`
   - 슬라이스 public API: `index.client.ts` / `index.server.ts`
-- 라우트 파일(`page`, `layout`, `loading`, `error` 등)은 `export default`를 사용한다.
-  - 네임드 export는 라우터가 인식하지 못한다.
+- 컴포넌트 라우트 파일(`page`, `layout`, `template`, `loading`, `error`, `not-found`, `global-error`, `default`)의 라우트 컴포넌트는 `export default`를 사용한다.
+  - 라우터는 기본 export만 라우트 컴포넌트로 렌더한다.
+- `route.ts`는 HTTP 메서드명 네임드 export(`GET`·`POST` 등)를 사용한다.
+- `metadata`·`generateMetadata`·`generateStaticParams`·`viewport` 등 세그먼트 계약은 네임드 export를 사용한다.
 - feature 컴포넌트는 네임드 export를 사용한다.
 - 벤더 중립 명명을 사용한다.
   - 백엔드·인프라 벤더명을 타입·심볼에 넣지 않는다.
@@ -47,14 +49,14 @@
 
 - 명시성을 우선한다.
 - 과한 추상화·배럴 남용·동적 재export를 피한다.
-- 서버/클라 경계를 가로지르는 배럴은 금지한다.
-  - 기준은 → [architecture](architecture.md)의 세그먼트 구조와 서버/클라 경계.
+- 서버/클라이언트 경계를 가로지르는 배럴은 금지한다.
+  - 기준은 → [architecture](architecture.md)의 세그먼트 구조와 서버/클라이언트 경계.
 
 ### 컴포넌트
 
 #### 배치·계층
 
-- 컴포넌트 배치는 → [architecture](architecture.md)의 세그먼트 구조와 서버/클라 경계.
+- 컴포넌트 배치는 → [architecture](architecture.md)의 세그먼트 구조와 서버/클라이언트 경계.
 - 재사용 디자인시스템 컴포넌트는 `packages/ui`에 둔다.
 - feature 전용 컴포넌트는 슬라이스 `ui`에 둔다.
 - 도메인 로직을 `packages/ui`에 넣지 않는다.
@@ -62,7 +64,7 @@
 
 #### 렌더링 경계
 
-- 컴포넌트의 서버/클라 기본값과 `'use client'` 판단은 → [rendering](rendering.md).
+- 컴포넌트의 서버/클라이언트 기본값과 `'use client'` 판단은 → [rendering](rendering.md).
 
 #### 접근성
 
@@ -94,14 +96,12 @@
 - 토큰 체계·명명·테마 분기는 → [design-system](design-system.md).
 - 조건부 클래스는 `packages/ui`가 소유한 `cn` 유틸로 합성한다.
 
-### 코드 주석·TSDoc
-
-#### 기본 규칙
+### 주석 공통 규칙
 
 - 주석은 한국어로 작성한다.
 - 도메인 개념은 슬라이스 로컬 용어집의 표준어만 사용한다.
 - 미등재 도메인 개념은 용어집에 먼저 등록한다.
-- `shared`·`packages/ui`·`packages/config` 등 도메인 무지 계층의 기술 어휘는 제외한다.
+- `shared`·`packages/ui`·`packages/config` 등 도메인 무지 계층의 기술 어휘는 표준어 요구 대상에서 제외한다.
 - 도메인 개념이 타입 doc에 처음 등장하면 `한국어(영문식별자)`로 병기한다.
 - 멤버 doc·라인 주석에는 병기하지 않는다.
 
@@ -181,12 +181,11 @@
 
 - 계약·요약은 TSDoc 블록(`/** */`)에 작성한다.
 - 구현 흐름·이유는 라인 주석(`//`)에 작성한다.
-- 타입 요약은 계사문으로 작성한다.
+- 타입 요약은 계사문('~이다' 형 문장)으로 작성한다.
 - 함수·컴포넌트·훅 요약은 3인칭 서술형으로 작성한다.
 - 멤버·리터럴 요약은 명사구로 작성한다.
 - 모든 요약은 마침표로 끝낸다.
 - 명령형과 장황한 주어형을 사용하지 않는다.
-- 타입 연결은 `{@link}`를 사용한다.
 - `@returns`와 자명한 `@param`은 작성하지 않는다.
 - `@param`은 비자명한 제약에만 작성한다.
 - 컴포넌트 prop 제약은 prop 타입 멤버 doc이 소유한다.
