@@ -36,7 +36,7 @@ export function nextConfig({ tsconfigRootDir }) {
       settings: {
         'boundaries/include': ['src/**/*'],
         // Next 관례 파일(src 루트) — FSD 요소가 아니므로 경계 검사에서 제외한다.
-        'boundaries/ignore': ['src/instrumentation.ts'],
+        'boundaries/ignore': ['src/instrumentation.ts', 'src/__mocks__/**'],
         'boundaries/elements': [
           { type: 'app', pattern: 'src/app' },
           { type: 'feature', pattern: 'src/features/*', capture: ['slice'] },
