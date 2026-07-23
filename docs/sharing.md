@@ -42,7 +42,7 @@
 
 ### 계약 진화·무결성
 
-- 파괴적 변경(삭제·의미 변경)은 oasdiff로 검사한다.
+- 파괴적 변경(삭제·의미 변경) 검사 장치는 → [architecture](architecture.md)의 경계 강제를 따른다.
 - drift 게이트는 계약과 생성물의 일치를 강제한다.
   - 계약 재생성 결과와 커밋된 생성물이 다르면 CI가 실패한다.
   - 코드와 커밋된 계약(OpenAPI)의 불일치는 방출 단위 스냅샷 테스트가 검증한다.
@@ -63,13 +63,15 @@
 | int64·`long` | string 또는 bigint | TS `number` 정밀도 제한 대응 |
 | BigDecimal·금액 | string | 반올림 오차 방지 |
 | enum | 열린 union + exhaustive 분기 | 닫힌 union은 새 서버 값에서 깨짐 |
-| nullability | JSpecify 방출 확인 후 TS 매핑 검증 | `?`·`| null` 검증 |
+| nullability | JSpecify 방출 확인 후 TS 매핑 검증 | `?`·`\| null` 검증 |
 | oneOf·판별 합집합 | discriminator 강제 | 코드젠 품질 유지 |
-| ProblemDetail `code` | open string | 생성 union은 편의용 |
+| ProblemDetail `code` | open string | → 에러 모델 |
+
+- 표의 처리 구현은 프론트 소비 계층이 소유한다.
 
 ### 코드젠 파이프라인
 
-- `packages/shared-types`가 계약에서 타입·Zod·API client를 생성한다.
+- `packages/shared-types`가 계약에서 타입·Zod·HTTP 클라이언트 코드를 생성한다.
   - orval을 사용한다.
 - 코드젠 도구는 저위험·가역적이다.
   - 코드젠 도구 변경은 소비처에 영향을 주지 않는다.
@@ -86,7 +88,7 @@
 | 구분 | 경로 |
 |---|---|
 | input | `apps/backend/docs/openapi/openapi.json` |
-| output | `src/generated` |
+| output | `packages/shared-types/src/generated` |
 
 - 계약이 여러 개면 생성 디렉터리와 패키지 export를 계약별로 분리한다.
   - 소비처는 사용하는 계약 export만 의존한다.
@@ -102,15 +104,14 @@
   - 내부 증분 책임은 Gradle 캐시에 둔다.
 - 소비 방향은 `shared-types → api-client(server-only) → frontend app`을 따른다.
 - `api-client`는 생성물을 벤더 중립 경계로 감싼다.
-- 경계 규칙과 소비 정책은 프론트가 소유한다.
+- 벤더 중립 경계의 규칙과 소비 정책은 프론트가 소유한다.
 
 ### 에러 모델
 
 - 에러 계약은 RFC 9457 ProblemDetail을 사용한다.
 - 형식과 확장 멤버(`code`·`errors[]`·`traceId`)는 백엔드가 소유한다.
-- 공용 에러 Zod 스키마는 `packages/shared-types` 하나만 소유한다.
+- 공용 에러 Zod 스키마는 `packages/shared-types`가 계약의 ProblemDetail 스키마에서 생성해 하나만 소유한다.
   - 모든 계약은 동일 에러 형상을 공유한다.
-  - 계약 간 생성물 비공유의 유일한 예외다.
 - 기계 분기는 `code`만 사용한다.
   - `detail`·`title` 분기를 금지한다.
 - `code`는 런타임에서 open string으로 처리한다.
