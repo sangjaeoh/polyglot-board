@@ -41,7 +41,7 @@ tasks.register<Test>("generateOpenApiDocs") {
     testClassesDirs = sourceSets["test"].output.classesDirs
     classpath = sourceSets["test"].runtimeClasspath
     useJUnitPlatform()
-    filter { includeTestsMatching("com.board.api.openapi.OpenApiSnapshotTest") }
+    filter { includeTestsMatching("com.board.app.api.openapi.OpenApiSnapshotTest") }
     systemProperty("openapi.file", openApiFile.asFile.absolutePath)
     systemProperty("openapi.write", "true")
     outputs.upToDateWhen { false }

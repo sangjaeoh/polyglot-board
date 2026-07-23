@@ -67,7 +67,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * <p>검증 대상 패키지는 하드코딩하지 않고 클래스패스에서 파생한다 — 클래스패스는 build.gradle.kts가 settings의
  * 모듈 목록에서 구성하므로 새 모듈은 자동 편입된다. 앱 루트는 {@code @SpringBootApplication} 소재 패키지,
- * 도메인 루트는 구역 마커 서브패키지(application·adapter·domain)를 가진 {@code com.board} 직하 패키지다.
+ * 도메인 루트는 구역 마커 서브패키지(application·adapter·domain)를 가진 {@code com.board.domain} 직하 패키지다.
  */
 @AnalyzeClasses(packages = "com.board", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureTest {
@@ -133,21 +133,17 @@ class ArchitectureTest {
         return roots;
     }
 
-    /** 도메인 루트 패키지를 클래스패스에서 파생한다(앱 루트와 겹치면 앱으로 분류). */
+    /** 도메인 루트 패키지를 클래스패스에서 파생한다 — 베이스 패키지는 {@code com.board.domain.{name}}. */
     private static SortedSet<String> domainRoots(JavaClasses allClasses) {
-        SortedSet<String> apps = appRoots(allClasses);
         SortedSet<String> roots = new TreeSet<>();
         for (JavaClass clazz : allClasses) {
             String[] segments = clazz.getPackageName().split("\\.");
-            if (segments.length >= 4
+            if (segments.length >= 5
                     && segments[0].equals("com")
                     && segments[1].equals("board")
-                    && !segments[2].equals("common")
-                    && DOMAIN_MARKERS.contains(segments[3])) {
-                String root = "com.board." + segments[2];
-                if (!apps.contains(root)) {
-                    roots.add(root);
-                }
+                    && segments[2].equals("domain")
+                    && DOMAIN_MARKERS.contains(segments[4])) {
+                roots.add("com.board.domain." + segments[3]);
             }
         }
         if (roots.isEmpty()) {
@@ -172,8 +168,8 @@ class ArchitectureTest {
                     bases.add("com.board.common." + segments[3]);
                     continue;
                 }
-                if (segments[3].equals("domain")) {
-                    bases.add("com.board." + segments[2]);
+                if (segments[2].equals("domain") && segments.length >= 5 && segments[4].equals("domain")) {
+                    bases.add("com.board.domain." + segments[3]);
                     continue;
                 }
             }
