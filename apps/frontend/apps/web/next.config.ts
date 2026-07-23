@@ -4,6 +4,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   // Docker runner 스테이지가 standalone 산출물만 복사하도록 self-contained 서버를 생성한다.
   output: 'standalone',
+  // 'use cache'·cacheTag·cacheLife·updateTag를 쓰기 위한 안정화된 플래그(docs/data.md 캐시 절).
+  cacheComponents: true,
   // 모노레포에서 file tracing 루트를 레포 루트로 고정한다(추론에 맡기면 워크스페이스 의존이 누락될 수 있다).
   outputFileTracingRoot: path.join(__dirname, '../../../..'),
   // 워크스페이스 TS 패키지(소스 배포)를 Next가 트랜스파일한다.

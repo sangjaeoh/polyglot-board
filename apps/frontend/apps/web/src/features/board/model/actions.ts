@@ -1,8 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { updateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { ApiError, createPost, deletePost, postIdSchema, updatePost, type PostId } from '@board/api-client';
+import { postListTag, postTag } from '@/entities/post';
 import { postCreateRequestSchema, postUpdateRequestSchema } from 'shared-types';
 import type { ZodError } from 'zod';
 
@@ -54,7 +55,7 @@ export async function createPostAction(
   } catch (error) {
     return apiErrorToState(error);
   }
-  revalidatePath('/');
+  updateTag(postListTag());
   redirect(`/posts/${createdId}`);
 }
 
@@ -78,8 +79,8 @@ export async function updatePostAction(
   } catch (error) {
     return apiErrorToState(error);
   }
-  revalidatePath('/');
-  revalidatePath(`/posts/${parsedId.data}`);
+  updateTag(postListTag());
+  updateTag(postTag(parsedId.data));
   redirect(`/posts/${parsedId.data}`);
 }
 
@@ -94,6 +95,6 @@ export async function deletePostAction(id: string): Promise<FormState> {
     const alreadyDeleted = error instanceof ApiError && error.code === 'POST_NOT_FOUND';
     if (!alreadyDeleted) return apiErrorToState(error);
   }
-  revalidatePath('/');
+  updateTag(postListTag());
   redirect('/');
 }

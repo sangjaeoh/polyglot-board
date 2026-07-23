@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
-import { revalidatePath } from 'next/cache';
+import { updateTag } from 'next/cache';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPostAction, deletePostAction, updatePostAction } from './actions';
 
@@ -23,7 +23,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 beforeEach(() => {
-  vi.mocked(revalidatePath).mockClear();
+  vi.mocked(updateTag).mockClear();
 });
 
 function formData(fields: Record<string, string>): FormData {
@@ -37,16 +37,16 @@ describe('createPostAction', () => {
     const state = await createPostAction(null, formData({ title: '', content: '', author: '' }));
 
     expect(state.fieldErrors).toBeDefined();
-    expect(revalidatePath).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
   });
 
-  it('작성에 성공하면 캐시를 무효화하고 상세로 리다이렉트한다', async () => {
+  it('작성에 성공하면 목록 캐시를 무효화하고 상세로 리다이렉트한다', async () => {
     server.use(http.post(`${BASE_URL}/api/v1/posts`, () => HttpResponse.json(VALID_POST, { status: 201 })));
 
     await expect(
       createPostAction(null, formData({ title: '제목', content: '본문', author: '글쓴이' })),
     ).rejects.toThrow(`NEXT_REDIRECT:/posts/${VALID_POST.id}`);
-    expect(revalidatePath).toHaveBeenCalledWith('/');
+    expect(updateTag).toHaveBeenCalledWith('post-list');
   });
 });
 
@@ -55,19 +55,19 @@ describe('updatePostAction', () => {
     const state = await updatePostAction('invalid-id', null, formData({ title: '제목', content: '본문' }));
 
     expect(state.message).toBe('잘못된 요청입니다.');
-    expect(revalidatePath).not.toHaveBeenCalled();
+    expect(updateTag).not.toHaveBeenCalled();
   });
 });
 
 describe('deletePostAction', () => {
-  it('삭제에 성공하면 캐시를 무효화하고 목록으로 리다이렉트한다', async () => {
+  it('삭제에 성공하면 목록 캐시를 무효화하고 목록으로 리다이렉트한다', async () => {
     server.use(http.delete(`${BASE_URL}/api/v1/posts/:id`, () => new HttpResponse(null, { status: 204 })));
 
     await expect(deletePostAction(VALID_POST.id)).rejects.toThrow('NEXT_REDIRECT:/');
-    expect(revalidatePath).toHaveBeenCalledWith('/');
+    expect(updateTag).toHaveBeenCalledWith('post-list');
   });
 
-  it('이미 삭제된 게시글이면 에러를 삼키고 목록으로 리다이렉트한다', async () => {
+  it('이미 삭제된 게시글이면 에러를 삼키고 목록 캐시를 무효화한 뒤 목록으로 리다이렉트한다', async () => {
     server.use(
       http.delete(`${BASE_URL}/api/v1/posts/:id`, () =>
         HttpResponse.json({ title: '없음', status: 404, code: 'POST_NOT_FOUND' }, { status: 404 }),
@@ -75,6 +75,6 @@ describe('deletePostAction', () => {
     );
 
     await expect(deletePostAction(VALID_POST.id)).rejects.toThrow('NEXT_REDIRECT:/');
-    expect(revalidatePath).toHaveBeenCalledWith('/');
+    expect(updateTag).toHaveBeenCalledWith('post-list');
   });
 });

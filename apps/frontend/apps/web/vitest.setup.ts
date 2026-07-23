@@ -8,5 +8,5 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('next/cache', () => ({
-  revalidatePath: vi.fn(),
+  updateTag: vi.fn(),
 }));
