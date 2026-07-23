@@ -45,8 +45,10 @@ polyglot-board/
 ├── apps/
 │   ├── backend/                         Spring Boot — Gradle 멀티모듈 모듈러 모놀리식
 │   │   ├── module-apps/app-api          실행 앱
+│   │   ├── module-apps/app-migration    Flyway 마이그레이션 전용 앱
 │   │   ├── module-domains/domain-board  게시판 도메인
 │   │   ├── module-common/               Java 내부 공유
+│   │   ├── module-tests/test-architecture ArchUnit 아키텍처 테스트
 │   │   └── docs/openapi/openapi.json    방출된 계약
 │   └── frontend/                        Next.js — 자체 Turborepo 서브트리(FSD-lite)
 │       ├── apps/web                     게시판 웹 앱
@@ -77,7 +79,7 @@ flowchart LR
 
 | 영역 | 채택 |
 | --- | --- |
-| 백엔드 | Java 25 · Spring Boot 4.1 · Spring MVC(가상 스레드) · Spring Data JPA/QueryDSL · Flyway · Gradle 9.5 멀티모듈 |
+| 백엔드 | Java 25 · Spring Boot 4.1 · Spring MVC(가상 스레드) · Spring Data JPA · Flyway · Gradle 9.5 멀티모듈 |
 | 프론트엔드 | Node.js 24 · Next.js 16 · React 19.2 · TypeScript · Tailwind CSS v4 · FSD-lite |
 | 디자인 시스템 | 시맨틱 토큰(색·타이포·모션·레이어) · `@board/ui` 프리미티브 · Storybook 워크벤치 |
 | 데이터베이스 | PostgreSQL 17 |
