@@ -34,3 +34,6 @@ apps/backend/.gradle/
 *.swp
 .idea/
 .vscode/
+
+# git worktrees (superpowers:using-git-worktrees)
+.worktrees/
